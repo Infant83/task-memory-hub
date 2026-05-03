@@ -1,0 +1,37 @@
+[project]
+name = "task-memory-hub"
+version = "0.1.0"
+description = "Windows-local task memory hub with CLI, REST, and Cline MCP surfaces."
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = [
+  "mcp>=1.0",
+  "swagger-ui-bundle==1.1.0",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+tray = [
+  "pystray",
+  "pillow",
+]
+
+[project.scripts]
+tmh = "task_memory_hub.cli:main"
+tmh-web = "task_memory_hub.api:main"
+tmh-worker = "task_memory_hub.worker:main"
+tmh-mcp = "task_memory_hub.mcp_server:main"
+tmh-tray = "task_memory_hub.tray:main"
+tmh-runner = "task_memory_hub.runner:main"
+
+[tool.setuptools.package-data]
+task_memory_hub = ["static/*"]
+
+[tool.setuptools.packages.find]
+include = ["task_memory_hub*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

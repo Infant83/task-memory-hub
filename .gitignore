@@ -1,0 +1,14 @@
+.tmh/
+.cline-test/
+.vscode/
+.playwright-cli/
+.playwright-mcp/
+tmh-public-*.png
+docs/handoff-progress-log.md
+docs/ralph/
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+build/
+*.egg-info/
