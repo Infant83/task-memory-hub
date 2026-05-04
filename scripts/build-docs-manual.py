@@ -19,6 +19,7 @@ KOREAN_TITLES = {
     "docs/cline-mcp-onprem-pilot-checklist.md": "Cline MCP 온프렘 파일럿",
     "docs/deepagents-backend-pilot.md": "Deepagents 백엔드 파일럿",
     "docs/external-adapter-plan.md": "외부 연동 어댑터 계획",
+    "docs/functionality-drift-audit.md": "기능 검증과 드리프트 감사",
     "docs/harness-runner-governance-development-spec.md": "하니스 러너 거버넌스 개발 명세",
     "docs/postgres-slow-track.md": "PostgreSQL 전환 준비",
     "docs/public-progress.md": "공개 진행 요약",
@@ -36,6 +37,11 @@ KOREAN_SUMMARIES = {
     "DESIGN.md": "작업자가 매일 사용하는 제어면으로서 Web UI가 가져야 할 정보 밀도, 가시성, 통제성을 정리한다.",
     "task-memory-hub-설계명세.md": "Windows 로컬 우선 task/alarm/agent hub의 원래 설계 의도와 핵심 요구사항을 담고 있다.",
     "docs/external-adapter-plan.md": "OpenProject, Outlook 이메일, Teams, Webhook 연동을 어떤 순서와 안전장치로 붙일지 정리한다.",
+    "docs/functionality-drift-audit.md": "현재 구현을 기능 스모크 결과와 원 설계 의도에 맞춰 비교하고, 유지/발전/되돌림 판단을 기록한다.",
+}
+
+LOCAL_ONLY_DOCS = {
+    "handoff-progress-log.md",
 }
 
 ROOT_MARKDOWN = [
@@ -273,6 +279,10 @@ def render_overview(generated_at: str) -> str:
           <h3>검증 기준</h3>
           <p>변경 후에는 compile, JS syntax, CI smoke, MCP smoke, P5 delivery dry-run, 필요한 경우 live Deepagents smoke를 수행한다. 구체 명령은 검증 명령 매뉴얼 섹션을 따른다.</p>
         </div>
+        <div>
+          <h3>공개 문서 범위</h3>
+          <p>로컬 handoff 로그와 private audit transcript는 공개 매뉴얼에 포함하지 않는다. 공개 가능한 판단 결과만 별도 요약 문서로 관리한다.</p>
+        </div>
       </div>
     </section>
     """
@@ -283,7 +293,7 @@ def main() -> int:
     markdown_docs.extend(
         path
         for path in sorted((ROOT / "docs").glob("*.md"))
-        if path.name not in {"manual.html"} and path.exists()
+        if path.name not in LOCAL_ONLY_DOCS and path.exists()
     )
     sections: list[str] = []
     entries: list[dict[str, object]] = []
