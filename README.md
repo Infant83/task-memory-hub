@@ -170,6 +170,7 @@ Script execution uses `script_ref` allowlists. Task prose, `next_action`, `detai
 - `AGENTS.md`: repository operating rules for coding agents.
 - `docs/public-progress.md`: public implementation summary.
 - `docs/public-release-plan.md`: public repository scope and cleanup plan.
+- `docs/manual.html`: generated integrated manual that combines docs and selected implementation snapshots.
 - `docs/verification-manual.md`: verification commands for CLI, API, MCP, Web UI, runner, worker, and public repo checks.
 - `docs/ci-necessity-review.md`: why the initial CI scope is intentionally small.
 - `docs/web-ui-design-application.md`: how the DESIGN.md approach maps to TMH.
@@ -184,19 +185,20 @@ Script execution uses `script_ref` allowlists. Task prose, `next_action`, `detai
 
 ## Current Roadmap
 
-P0 through P4 are implemented as local-first pilots:
+P0 through P5 are implemented as local-first pilots:
 
 - P0 dry-run harness runner.
 - P1 approval and stop controls.
 - P2 deterministic Deepagents backend pilot.
 - P3 Cline MCP pilot checklist.
 - P4 allowlisted script backend.
+- P5 review gate and dry-run delivery request control point.
 
 Next:
 
 1. Web UI polish: make the control-plane inspector readable enough for daily use, not just a smoke-test page.
 2. Installer hardening: move from PowerShell bootstrap to signed zip, then standalone executable packaging when lifecycle and upgrade behavior are stable.
-3. External delivery pilots: Teams, OpenProject, email, and webhook after review gate, secret-ref, and capability policy are stable.
+3. External delivery pilots: Teams, OpenProject, email, and webhook adapters after dry-run delivery requests prove stable.
 4. Live backend pilots: Cline IDE and on-prem Deepagents only after stop semantics, artifact reporting, and approval rules are stable.
 5. PostgreSQL adapter: migrate after the local service boundary and concurrency model prove stable under multi-agent use.
 

@@ -8,7 +8,11 @@ $ErrorActionPreference = "Stop"
 
 $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $Launcher = Join-Path $Root "scripts\tmh-mcp.cmd"
-$ResolvedDb = Join-Path $Root $DbPath
+if ([System.IO.Path]::IsPathRooted($DbPath)) {
+    $ResolvedDb = $DbPath
+} else {
+    $ResolvedDb = Join-Path $Root $DbPath
+}
 $DbDir = Split-Path -Parent $ResolvedDb
 if (-not (Test-Path -LiteralPath $DbDir)) {
     New-Item -ItemType Directory -Path $DbDir | Out-Null
@@ -74,6 +78,7 @@ async def main():
                 "request_task_stop",
                 "request_review_gate",
                 "decide_review_gate",
+                "request_delivery_dry_run",
                 "runner_run_once",
             ]
             missing = [name for name in required if name not in names]

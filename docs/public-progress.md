@@ -48,6 +48,7 @@ Task Memory Hub is a local-first task, alarm, and agent work-control hub. The in
 - Dry-run harness runner.
 - Human approval, rejection, change-request, and stop-request events.
 - P5 review-gate flow using durable `review_gate` child tasks.
+- P5 dry-run delivery request flow for external delivery validation without sending.
 - Deterministic Deepagents backend pilot path.
 - Cline MCP on-prem pilot checklist and direct STDIO smoke script.
 - Allowlisted `script_ref` backend. Raw task prose and task-provided command strings are not executable.
@@ -70,12 +71,13 @@ Task Memory Hub is a local-first task, alarm, and agent work-control hub. The in
 - Deterministic Deepagents CLI smoke path.
 - Cline MCP pilot script without depending on user-global Cline settings.
 - Script allowlist smoke: allowlisted command completes, unknown command ref blocks.
+- P5 delivery dry-run smoke: unapproved external delivery creates/reuses a review gate; approved delivery records a `delivery_dry_run` event without sending.
 
 ## Remaining Gaps
 
 - Public `main` should remain on the clean-history snapshot. If the repository was public before the rewrite, earlier exposure cannot be retroactively ruled out.
 - Web UI needs continued polish for daily operations, especially dense task lists, filters, and operator status panels.
-- External writes such as Teams, OpenProject, email, and webhooks still need backend-specific pilots, but the P5 review-gate control point now exists.
+- Real external writes such as Teams, OpenProject, email, and webhooks still need backend-specific pilots, but the P5 review-gate and dry-run delivery control points now exist.
 - Live Cline and live Deepagents runs need on-prem authentication/runtime validation.
 - PostgreSQL remains a slow-track target, not the current default backend.
 - Backup/restore, diagnostics, standalone installer packaging, and tray UX need more end-user hardening.

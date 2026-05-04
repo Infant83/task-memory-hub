@@ -42,6 +42,7 @@ from .service import (
     list_tasks,
     record_approval_decision,
     decide_review_gate,
+    request_delivery_dry_run,
     release_task,
     request_review_gate,
     request_task_stop,
@@ -559,6 +560,21 @@ def make_handler(db_path: Path | str | None = None, write_token: str | None = No
                                 approver_principal_id=approver_principal_id,
                                 reason=body.get("reason", ""),
                                 actor=actor,
+                                db_path=db_path,
+                            ),
+                        )
+                        return
+                    if action == "delivery-dry-run":
+                        self._send(
+                            HTTPStatus.OK,
+                            request_delivery_dry_run(
+                                task_id,
+                                channel=body.get("channel", ""),
+                                recipient_ref=body.get("recipient_ref", ""),
+                                include_artifacts=body.get("include_artifacts") or None,
+                                requires_review=body.get("requires_review"),
+                                reason=body.get("reason", ""),
+                                actor=body.get("by") or body.get("actor") or "web-ui",
                                 db_path=db_path,
                             ),
                         )
@@ -1367,6 +1383,16 @@ def build_openapi_spec() -> dict:
                     "responses": {"200": ok_response, "401": error_response, "404": error_response},
                 }
             },
+            "/v1/tasks/{task_id}/delivery-dry-run": {
+                "post": {
+                    "tags": ["governance"],
+                    "summary": "Record an external delivery request without sending anything",
+                    "security": write_security,
+                    "parameters": [task_id_param],
+                    "requestBody": json_body("#/components/schemas/DeliveryDryRunInput"),
+                    "responses": {"200": ok_response, "400": error_response, "401": error_response, "404": error_response},
+                }
+            },
             "/v1/tasks/{task_id}/reject": {
                 "post": {
                     "tags": ["governance"],
@@ -1623,6 +1649,17 @@ def build_openapi_spec() -> dict:
                         "reason": {"type": "string"},
                     },
                 },
+                "DeliveryDryRunInput": {
+                    "type": "object",
+                    "properties": {
+                        "by": {"type": "string", "default": "owner"},
+                        "channel": {"type": "string", "example": "email"},
+                        "recipient_ref": {"type": "string", "example": "principal:owner"},
+                        "include_artifacts": {"type": "array", "items": {"type": "string"}},
+                        "requires_review": {"type": "boolean", "default": True},
+                        "reason": {"type": "string"},
+                    },
+                },
                 "StopRequestInput": {
                     "type": "object",
                     "properties": {
@@ -1714,6 +1751,7 @@ def render_api_docs() -> str:
         ("POST", "/v1/tasks/{task_id}/approve", "사람 승인 기록 및 runner 실행 허용", "write token"),
         ("POST", "/v1/tasks/{task_id}/review-gate", "선택 작업에 대한 review gate task 생성", "write token"),
         ("POST", "/v1/tasks/{task_id}/review-gate-decision", "review gate 결정으로 원 작업 승인/차단 반영", "write token"),
+        ("POST", "/v1/tasks/{task_id}/delivery-dry-run", "외부 전달 요청을 실제 발송 없이 이벤트로 검증", "write token"),
         ("POST", "/v1/tasks/{task_id}/reject", "사람 거절 기록 및 controller 차단", "write token"),
         ("POST", "/v1/tasks/{task_id}/request-changes", "수정요청 기록 및 controller 차단", "write token"),
         ("POST", "/v1/tasks/{task_id}/stop", "진행 중/배정 작업 중지 요청", "write token"),
@@ -2118,6 +2156,7 @@ def render_task(task: dict, detail: dict, write_token: str = "") -> str:
       {heartbeat_button}
       {runner_button}
       <button data-ui-action="request-review-gate">Review Gate</button>
+      <button data-ui-action="delivery-dry-run">Delivery Dry-run</button>
       <button data-ui-action="orchestrator-run">Orchestrator Run</button>
       <span id="result" class="result" aria-live="polite"></span>
     </section>

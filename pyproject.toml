@@ -18,6 +18,11 @@ tray = [
   "pystray",
   "pillow",
 ]
+deepagents = [
+  "deepagents",
+  "langchain-openai",
+  "langgraph",
+]
 
 [project.scripts]
 tmh = "task_memory_hub.cli:main"

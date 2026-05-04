@@ -136,6 +136,19 @@ async function runDryRunner() {
   }
 }
 
+async function requestDeliveryDryRun() {
+  const channel = window.prompt("delivery channel", "email") || "";
+  const recipientRef = window.prompt("recipient_ref", "principal:owner") || "";
+  const reason = window.prompt("reason", "external delivery dry-run") || "";
+  await postTaskAction("delivery-dry-run", {
+    by: "owner",
+    channel,
+    recipient_ref: recipientRef,
+    requires_review: true,
+    reason,
+  });
+}
+
 async function appendProgress() {
   const progressBox = document.getElementById("progressMessage");
   const message = progressBox ? progressBox.value.trim() : "";
@@ -177,6 +190,8 @@ document.addEventListener("click", (event) => {
   } else if (uiAction === "request-review-gate") {
     const reason = window.prompt("reason", "human review required") || "";
     postTaskAction("review-gate", { by: "owner", reason, gate_type: "manual_review" });
+  } else if (uiAction === "delivery-dry-run") {
+    requestDeliveryDryRun();
   } else if (uiAction === "append-progress") {
     appendProgress();
   }

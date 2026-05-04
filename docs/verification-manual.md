@@ -67,7 +67,7 @@ if (Test-Path $db) { Remove-Item $db -Force }
 tmh --db $db init
 $task = tmh --db $db add "CLI 검증 작업 생성" --next "상세 조회 후 완료 처리" --priority normal --json | ConvertFrom-Json
 tmh --db $db list
-tmh --db $db show $task.task_id --json
+tmh --db $db show $task.task_id
 tmh --db $db done $task.task_id --owner codex
 tmh --db $db show $task.task_id
 ```
@@ -241,6 +241,32 @@ cline mcp add --config .\.cline-test task-memory-hub .\scripts\tmh-mcp.cmd
 
 검증 기준은 `docs/cline-mcp-onprem-pilot-checklist.md`를 따른다. 사용자 전역 Cline MCP 설정은 명시 요청이 있을 때만 수정한다.
 
+## P5 Review Gate / Delivery Dry-Run 검증
+
+외부 전달을 실제로 보내지 않고 review gate와 event trail만 확인한다.
+
+```powershell
+$db = "$env:TEMP\tmh-p5-smoke.sqlite"
+if (Test-Path $db) { Remove-Item $db -Force }
+
+$task = tmh --db $db add "P5 외부 전달 드라이런 검증" `
+  --artifact-contract-json '{"delivery":[{"channel":"email","recipient_ref":"principal:owner","requires_review":true}]}' `
+  --json | ConvertFrom-Json
+
+$first = tmh --db $db delivery dry-run $task.task_id --channel email --recipient-ref principal:owner --requires-review --json | ConvertFrom-Json
+tmh --db $db review-gate decide $first.review_gate.task_id --decision approved --by owner --json
+tmh --db $db delivery dry-run $task.task_id --channel email --recipient-ref principal:owner --requires-review --json
+tmh --db $db show $task.task_id
+tmh --db $db events $task.task_id --json
+```
+
+검증 기준:
+
+- 승인 전 delivery dry-run은 `review_required`를 반환한다.
+- review gate 결정 후 subject task에 `approval_decision`과 `review_gate_decision`이 남는다.
+- 승인 후 delivery dry-run은 `dry_run_recorded`를 반환하고 실제 외부 전송은 하지 않는다.
+- event trail에 `delivery_requested`, `delivery_review_required`, `delivery_dry_run`, `artifact_reported`가 남는다.
+
 ## Deepagents / Script Backend 검증
 
 Deterministic Deepagents backend:
@@ -249,6 +275,14 @@ Deterministic Deepagents backend:
 python scripts\tmh-deepagents-smoke.py --prompt "hello"
 tmh runner once --backend deepagents_cli --backend-command "python scripts\tmh-deepagents-smoke.py" --timeout-seconds 30 --capability tmh-api --capability deepagents-cli --json
 ```
+
+Live Deepagents API smoke:
+
+```powershell
+python scripts\tmh-deepagents-live-smoke.py --prompt "TMH 상태를 한 문장으로 요약해줘."
+```
+
+이 검증은 `OPENAI_API_KEY`가 필요하다. `OPENAI_BASE_URL`이 있으면 해당 endpoint를 사용하고, 없으면 기본 OpenAI endpoint를 사용한다.
 
 Allowlisted script backend:
 

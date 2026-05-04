@@ -41,6 +41,7 @@ from .service import (
     heartbeat_claim,
     record_approval_decision,
     decide_review_gate,
+    request_delivery_dry_run,
     release_task,
     request_review_gate,
     request_task_stop,
@@ -480,6 +481,29 @@ def decide_review_gate_tool(
         gate_task_id,
         decision,
         approver_principal_id=approver_principal_id,
+        reason=reason,
+        actor=by,
+    )
+
+
+@mcp.tool(name="request_delivery_dry_run")
+def request_delivery_dry_run_tool(
+    task_id: str,
+    by: str = "owner",
+    channel: str = "",
+    recipient_ref: str = "",
+    include_artifacts: list[str] | None = None,
+    requires_review: bool | None = True,
+    reason: str = "",
+) -> dict[str, Any]:
+    """Record an external delivery request without sending anything."""
+    ensure_db()
+    return request_delivery_dry_run(
+        task_id,
+        channel=channel,
+        recipient_ref=recipient_ref,
+        include_artifacts=include_artifacts,
+        requires_review=requires_review,
         reason=reason,
         actor=by,
     )

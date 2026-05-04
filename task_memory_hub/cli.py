@@ -63,8 +63,10 @@ from .service import (
     list_automations,
     list_notification_attempts,
     list_tasks,
+    list_task_events,
     record_approval_decision,
     decide_review_gate,
+    request_delivery_dry_run,
     request_task_stop,
     request_review_gate,
     snooze_task,
@@ -880,6 +882,11 @@ JSON file shape:
     show = subcommands.add_parser("show", help="Show one task")
     show.add_argument("task_id")
 
+    events_parser = subcommands.add_parser("events", help="Show task event trail")
+    events_parser.add_argument("task_id")
+    events_parser.add_argument("--limit", type=int, default=40)
+    events_parser.add_argument("--json", action="store_true")
+
     context = subcommands.add_parser("context", help="Show an agent resume context pack")
     context.add_argument("task_id")
 
@@ -965,6 +972,29 @@ JSON file shape:
     review_gate_decide.add_argument("--by", default="owner")
     review_gate_decide.add_argument("--reason", default="")
     review_gate_decide.add_argument("--json", action="store_true")
+
+    delivery = subcommands.add_parser("delivery", help="Request safe dry-run delivery checks")
+    delivery_sub = delivery.add_subparsers(dest="delivery_command", required=True)
+    delivery_dry_run = delivery_sub.add_parser(
+        "dry-run",
+        help="Record an external delivery request without sending anything",
+        formatter_class=HELP_FORMATTER,
+        epilog=examples(
+            f"""
+{CLI_PROG} delivery dry-run tmh_example --channel email --recipient-ref principal:owner --by owner
+{CLI_PROG} delivery dry-run tmh_example --channel openproject --recipient-ref openproject:work-package-52 --requires-review --json
+            """
+        ),
+    )
+    delivery_dry_run.add_argument("task_id")
+    delivery_dry_run.add_argument("--channel", default="")
+    delivery_dry_run.add_argument("--recipient-ref", default="")
+    delivery_dry_run.add_argument("--include-artifact", action="append", default=[])
+    delivery_dry_run.add_argument("--requires-review", dest="requires_review", action="store_true", default=None)
+    delivery_dry_run.add_argument("--no-requires-review", dest="requires_review", action="store_false")
+    delivery_dry_run.add_argument("--reason", default="")
+    delivery_dry_run.add_argument("--by", default="owner")
+    delivery_dry_run.add_argument("--json", action="store_true")
 
     runner = subcommands.add_parser("runner", help="Run a policy-aware harness runner")
     runner_sub = runner.add_subparsers(dest="runner_command", required=True)
@@ -1166,6 +1196,7 @@ tmh-worker --channel {DEFAULT_NOTIFICATION_CHANNEL} --interval 60
     set_examples(bind_missing, f"{CLI_PROG} bind-missing --source owner\n{CLI_PROG} bind-missing --source owner --yes")
     set_examples(tree_parser, f"{CLI_PROG} tree\n{CLI_PROG} tree tmh_parent_id")
     set_examples(show, f"{CLI_PROG} show tmh_example")
+    set_examples(events_parser, f"{CLI_PROG} events tmh_example\n{CLI_PROG} events tmh_example --json")
     set_examples(context, f"{CLI_PROG} context tmh_example")
     set_examples(update_parser, f"{CLI_PROG} update tmh_example --status acknowledged\n{CLI_PROG} update tmh_example --priority high --rank 10")
     set_examples(ack, f"{CLI_PROG} ack tmh_example")
@@ -1182,6 +1213,7 @@ tmh-worker --channel {DEFAULT_NOTIFICATION_CHANNEL} --interval 60
     set_examples(review_gate, f"{CLI_PROG} review-gate request tmh_example --reason \"외부 write 전 검토\"\n{CLI_PROG} review-gate decide tmh_gate --decision approved --by owner")
     set_examples(review_gate_request, f"{CLI_PROG} review-gate request tmh_example --reason \"external_write 승인 필요\" --by owner")
     set_examples(review_gate_decide, f"{CLI_PROG} review-gate decide tmh_gate --decision approved --by owner --reason \"검토 완료\"")
+    set_examples(delivery, f"{CLI_PROG} delivery dry-run tmh_example --channel email --recipient-ref principal:owner")
     set_examples(runner, f"{CLI_PROG} runner once --name tmh-runner --backend dry_run --json\n{CLI_PROG} runner watch --iterations 3")
     set_examples(runner_once, f"{CLI_PROG} runner once --task-id tmh_example --backend dry_run --capability tmh-api --json\n{CLI_PROG} runner once --backend deepagents_cli --backend-command \"python scripts\\tmh-deepagents-smoke.py\" --timeout-seconds 30\n{CLI_PROG} runner once --backend script_ref --script-allowlist .\\script-backends.json --capability tmh-api --json")
     set_examples(runner_watch, f"{CLI_PROG} runner watch --name tmh-runner --interval-seconds 30")
@@ -1563,6 +1595,17 @@ def main(argv: list[str] | None = None) -> int:
             print_json(get_task(args.task_id, db_path=db_path))
             return 0
 
+        if args.command == "events":
+            events = list_task_events(args.task_id, db_path=db_path, limit=args.limit)
+            if args.json:
+                print_json(events)
+            else:
+                if not events:
+                    print("No events.")
+                for event in events:
+                    print(f"{event['created_at']}  {event['event_type']}  {event['actor']}")
+            return 0
+
         if args.command == "context":
             print_json(get_context_pack(args.task_id, db_path=db_path))
             return 0
@@ -1690,6 +1733,27 @@ def main(argv: list[str] | None = None) -> int:
                     db_path=db_path,
                 )
                 print_json(result) if args.json else print_tasks([result["subject_task"], result["review_gate"]])
+                return 0
+
+        if args.command == "delivery":
+            if args.delivery_command == "dry-run":
+                result = request_delivery_dry_run(
+                    args.task_id,
+                    channel=args.channel,
+                    recipient_ref=args.recipient_ref,
+                    include_artifacts=args.include_artifact,
+                    requires_review=args.requires_review,
+                    reason=args.reason,
+                    actor=args.by,
+                    db_path=db_path,
+                )
+                if args.json:
+                    print_json(result)
+                else:
+                    print(f"delivery dry-run: {result['result']}")
+                    if result.get("review_gate"):
+                        print(f"review gate: {result['review_gate']['task_id']}")
+                    print_tasks([result["task"]])
                 return 0
 
         if args.command == "runner":

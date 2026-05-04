@@ -574,6 +574,8 @@ Status: implemented in P4. See `docs/script-ref-backend-allowlist.md`.
 - review_gate task flow 추가
 - review policy와 secret ref가 안정된 뒤 Teams/OpenProject/email 추가
 
+Status: implemented as a control-point pilot. Review gates are durable child tasks, and `delivery dry-run` records external delivery requests without sending. Real Teams/OpenProject/email/webhook adapters remain deferred.
+
 ### P6 - PostgreSQL slow-track
 
 - 지금은 SQLite default 유지

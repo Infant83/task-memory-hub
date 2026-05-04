@@ -45,6 +45,20 @@ APPROVAL_DECISION_ALIASES = {
     "request_changes": "changes_requested",
     "change_requested": "changes_requested",
 }
+EXTERNAL_SIDE_EFFECT_CLASSES = {"external_write", "irreversible", "sensitive_decision"}
+RAW_DELIVERY_SECRET_FIELDS = {
+    "api_key",
+    "authorization",
+    "bearer",
+    "email",
+    "password",
+    "secret",
+    "secret_value",
+    "token",
+    "url",
+    "webhook",
+    "webhook_url",
+}
 CLAIM_BLOCKING_CONTROLLER_STATUSES = {"paused", "blocked", "failed", "completed"}
 DEFAULT_EXECUTION_MODE_BY_KIND = {
     "reminder": "manual",
@@ -197,6 +211,32 @@ def append_task_event(
         )
         updated = conn.execute("SELECT * FROM tasks WHERE task_id = ?", (task_id,)).fetchone()
         return row_to_dict(updated)
+
+
+def list_task_events(
+    task_id: str,
+    db_path: Path | str | None = None,
+    limit: int = 40,
+) -> list[dict[str, Any]]:
+    path = ensure_db(db_path)
+    with transaction(path) as conn:
+        rows = conn.execute(
+            """
+            SELECT * FROM task_events
+            WHERE task_id = ?
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (task_id, int(limit)),
+        ).fetchall()
+    events = rows_to_dicts(rows)
+    for event in events:
+        payload = event.pop("payload_json", "{}") or "{}"
+        try:
+            event["payload"] = json.loads(payload)
+        except json.JSONDecodeError:
+            event["payload"] = {"raw": payload}
+    return events
 
 
 def _get_by_unique(conn, idempotency_key: str | None, fingerprint: str) -> dict[str, Any] | None:
@@ -1062,6 +1102,171 @@ def decide_review_gate(
         "review_gate": completed_gate,
         "review_gate_approval": gate_after_approval,
         "subject_task": subject_after_approval,
+    }
+
+
+def _normalize_delivery_items(
+    task: dict[str, Any],
+    channel: str = "",
+    recipient_ref: str = "",
+    include_artifacts: list[str] | None = None,
+    requires_review: bool | None = None,
+) -> list[dict[str, Any]]:
+    artifact_contract = task.get("artifact_contract") or {}
+    raw_items = artifact_contract.get("delivery") if isinstance(artifact_contract, dict) else []
+    items = [item for item in (raw_items or []) if isinstance(item, dict)]
+    channel = _clean_text(channel)
+    recipient_ref = _clean_text(recipient_ref)
+    include_artifacts = [str(item).strip() for item in (include_artifacts or []) if str(item).strip()]
+
+    if channel:
+        items = [item for item in items if _clean_text(item.get("channel")) == channel]
+    if not items and (channel or recipient_ref or include_artifacts):
+        items = [
+            {
+                "channel": channel or "external",
+                "recipient_ref": recipient_ref,
+                "include_artifacts": include_artifacts,
+                "requires_review": True if requires_review is None else requires_review,
+            }
+        ]
+
+    normalized: list[dict[str, Any]] = []
+    for item in items:
+        delivery = dict(item)
+        if channel:
+            delivery["channel"] = channel
+        if recipient_ref:
+            delivery["recipient_ref"] = recipient_ref
+        if include_artifacts:
+            delivery["include_artifacts"] = include_artifacts
+        delivery["channel"] = _clean_text(delivery.get("channel"), "external") or "external"
+        delivery["recipient_ref"] = _clean_text(delivery.get("recipient_ref"))
+        delivery["include_artifacts"] = [
+            str(value).strip()
+            for value in (delivery.get("include_artifacts") or [])
+            if str(value).strip()
+        ]
+        if requires_review is None:
+            delivery["requires_review"] = bool(delivery.get("requires_review", True))
+        else:
+            delivery["requires_review"] = bool(requires_review)
+        normalized.append(delivery)
+    return normalized
+
+
+def _delivery_policy_violations(deliveries: list[dict[str, Any]]) -> list[str]:
+    violations: list[str] = []
+    for index, item in enumerate(deliveries, start=1):
+        if not item.get("recipient_ref"):
+            violations.append(f"delivery[{index}] requires recipient_ref")
+        for key, value in item.items():
+            normalized_key = str(key).strip().lower().replace("-", "_")
+            if normalized_key.endswith("_ref") or normalized_key in {"recipient_ref", "auth_profile_ref"}:
+                continue
+            if normalized_key in RAW_DELIVERY_SECRET_FIELDS and value:
+                violations.append(f"delivery[{index}] must use a reference field instead of raw {key}")
+    return violations
+
+
+def request_delivery_dry_run(
+    task_id: str,
+    channel: str = "",
+    recipient_ref: str = "",
+    include_artifacts: list[str] | None = None,
+    requires_review: bool | None = None,
+    reason: str = "",
+    actor: str = "manual",
+    db_path: Path | str | None = None,
+) -> dict[str, Any]:
+    """Record a dry-run external delivery request without sending anything."""
+    task = get_task(task_id, db_path=db_path)
+    deliveries = _normalize_delivery_items(
+        task,
+        channel=channel,
+        recipient_ref=recipient_ref,
+        include_artifacts=include_artifacts,
+        requires_review=requires_review,
+    )
+    if not deliveries:
+        raise ValueError("delivery dry-run requires artifact_contract.delivery or --channel/--recipient-ref")
+
+    contract = task.get("execution_contract") or {}
+    side_effect_class = _clean_text(contract.get("side_effect_class"), "none").lower().replace("-", "_")
+    requires_human_review = any(item.get("requires_review", True) for item in deliveries)
+    requires_human_review = requires_human_review or side_effect_class in EXTERNAL_SIDE_EFFECT_CLASSES
+    approved = bool(task.get("approved_by_principal_id"))
+    policy_violations = _delivery_policy_violations(deliveries)
+    timestamp = iso_now()
+    payload = {
+        "dry_run": True,
+        "real_send": False,
+        "deliveries": deliveries,
+        "requires_review": requires_human_review,
+        "approved": approved,
+        "reason": reason,
+        "side_effect_class": side_effect_class,
+        "requested_at": timestamp,
+    }
+    append_task_event(task_id, "delivery_requested", actor, payload, db_path=db_path)
+
+    if policy_violations:
+        blocked_payload = {**payload, "policy_violations": policy_violations}
+        append_task_event(task_id, "delivery_policy_blocked", actor, blocked_payload, db_path=db_path)
+        blocked_task = block_task(
+            task_id,
+            reason="; ".join(policy_violations),
+            actor=actor,
+            db_path=db_path,
+            payload=blocked_payload,
+        )
+        return {
+            "allowed": False,
+            "result": "policy_blocked",
+            "task": blocked_task,
+            "deliveries": deliveries,
+            "policy_violations": policy_violations,
+        }
+
+    if requires_human_review and not approved:
+        review_gate_result = request_review_gate(
+            task_id,
+            reason=reason or "external delivery dry-run requires human review",
+            actor=actor,
+            gate_type="external_delivery",
+            db_path=db_path,
+        )
+        review_payload = {
+            **payload,
+            "review_gate_task_id": review_gate_result["review_gate"]["task_id"],
+        }
+        append_task_event(task_id, "delivery_review_required", actor, review_payload, db_path=db_path)
+        return {
+            "allowed": False,
+            "result": "review_required",
+            "task": get_task(task_id, db_path=db_path),
+            "review_gate": review_gate_result["review_gate"],
+            "deliveries": deliveries,
+        }
+
+    append_task_event(task_id, "delivery_dry_run", actor, payload, db_path=db_path)
+    append_task_event(
+        task_id,
+        "artifact_reported",
+        actor,
+        {
+            "artifact_type": "delivery_dry_run",
+            "artifact_ref": f"delivery-dry-run:{task_id}:{timestamp}",
+            "summary": "External delivery request validated without sending.",
+            "deliveries": deliveries,
+        },
+        db_path=db_path,
+    )
+    return {
+        "allowed": True,
+        "result": "dry_run_recorded",
+        "task": get_task(task_id, db_path=db_path),
+        "deliveries": deliveries,
     }
 
 

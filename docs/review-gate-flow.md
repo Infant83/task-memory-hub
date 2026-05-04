@@ -87,6 +87,41 @@ When runner policy says human approval is required and the subject task has no a
 
 After approval, the subject task controller status becomes `active`, and the runner can execute it on the next pass.
 
+## Delivery Dry-Run
+
+P5 includes a dry-run delivery control point. It validates an external delivery request and writes durable events without sending email, Teams messages, OpenProject updates, or webhooks.
+
+CLI:
+
+```powershell
+tmh delivery dry-run tmh_subject --channel email --recipient-ref principal:owner --requires-review --by owner
+```
+
+REST:
+
+```http
+POST /v1/tasks/{task_id}/delivery-dry-run
+```
+
+MCP tool:
+
+- `request_delivery_dry_run`
+
+Event flow:
+
+- `delivery_requested`
+- `delivery_policy_blocked` when raw secret/write fields are present
+- `delivery_review_required` when approval is required but missing
+- `delivery_dry_run` when the request is approved for dry-run
+- `artifact_reported` with `artifact_type=delivery_dry_run`
+
+Guardrails:
+
+- The dry-run path never sends to external systems.
+- Delivery targets should use `recipient_ref`, not raw email addresses or webhook URLs.
+- Secret values are not accepted in delivery payloads; use references such as `auth_profile_ref`.
+- Review-gate approval authorizes the dry-run record, not a real external send adapter.
+
 ## Guardrails
 
 - Review gate approval does not store secrets.

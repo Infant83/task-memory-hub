@@ -10,6 +10,7 @@ The project goal is to build a Windows 11 local-first alarm and task-memory hub 
 
 - Primary product/design reference: `task-memory-hub-설계명세.md`.
 - Product README and implementation plan: `README.md`.
+- Integrated HTML manual: `docs/manual.html`.
 - Web UI design contract: `DESIGN.md`.
 - Web UI screen guide: `docs/web-ui-screen-guide.md`.
 - Windows install standard: `docs/windows-install-standard.md`.
