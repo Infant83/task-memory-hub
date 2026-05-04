@@ -170,6 +170,7 @@ Script execution uses `script_ref` allowlists. Task prose, `next_action`, `detai
 - `AGENTS.md`: repository operating rules for coding agents.
 - `docs/public-progress.md`: public implementation summary.
 - `docs/public-release-plan.md`: public repository scope and cleanup plan.
+- `docs/verification-manual.md`: verification commands for CLI, API, MCP, Web UI, runner, worker, and public repo checks.
 - `docs/ci-necessity-review.md`: why the initial CI scope is intentionally small.
 - `docs/web-ui-design-application.md`: how the DESIGN.md approach maps to TMH.
 - `docs/web-ui-screen-guide.md`: Web UI list/detail screen meaning and drift guard.

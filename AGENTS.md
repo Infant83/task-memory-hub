@@ -15,6 +15,7 @@ The project goal is to build a Windows 11 local-first alarm and task-memory hub 
 - Windows install standard: `docs/windows-install-standard.md`.
 - Public progress summary: `docs/public-progress.md`.
 - Public release plan and safety checklist: `docs/public-release-plan.md`.
+- Verification command manual: `docs/verification-manual.md`.
 - Implementation scope sanity check: `docs/implementation-sanity-check.md`.
 - Agentic workspace control-plane design: `docs/agentic-workspace-control-plane.md`.
 - Task kind, automation, workflow/run contract standard: `docs/task-execution-contract-standard.md`.
