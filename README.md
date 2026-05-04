@@ -180,6 +180,7 @@ Script execution uses `script_ref` allowlists. Task prose, `next_action`, `detai
 - `docs/task-execution-contract-standard.md`: task kind, automation, workflow run, and execution contract model.
 - `docs/harness-runner-governance-development-spec.md`: orchestrator/runner/backend governance design.
 - `docs/review-gate-flow.md`: P5 human review-gate workflow.
+- `docs/external-adapter-plan.md`: OpenProject, Outlook email, Teams hold, and Webhook adapter plan.
 - `docs/task-title-standard.md`: Korean-first task title standard.
 - `docs/postgres-slow-track.md`: PostgreSQL migration preparation notes.
 

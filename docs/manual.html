@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Task Memory Hub Integrated Manual</title>
+  <link rel="icon" href="data:,">
+  <title>Task Memory Hub 통합 매뉴얼</title>
   <style>
     :root {
       color-scheme: light;
@@ -71,20 +72,46 @@
     h2 { margin: 6px 0 8px; font-size: 22px; }
     h3 { margin-top: 22px; }
     .summary { color: var(--muted); border-left: 3px solid var(--accent); padding-left: 10px; }
+    .source-note { color: var(--muted); font-size: 13px; }
+    .callout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .callout-grid > div {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #f9fbfd;
+    }
+    .callout-grid h3 { margin: 0 0 8px; font-size: 16px; }
     code { background: #eef3f8; border-radius: 4px; padding: 1px 4px; }
     .code-block, .table-block {
       overflow: auto;
       background: var(--code);
-      color: #e5e7eb;
+      color: #f8fafc;
       border-radius: 6px;
       padding: 12px;
       line-height: 1.45;
-      font-size: 12px;
+      font-size: 13px;
+      white-space: pre;
+      border: 1px solid #1f2937;
+    }
+    .code-block code,
+    .table-block code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      font: inherit;
+      white-space: pre;
     }
     details summary { cursor: pointer; color: var(--accent); font-weight: 700; }
     a { color: var(--accent); }
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; padding: 12px; }
+      .callout-grid { grid-template-columns: 1fr; }
       nav { position: static; max-height: none; }
       header { padding: 20px 16px; }
     }
@@ -92,14 +119,15 @@
 </head>
 <body>
   <header>
-    <h1>Task Memory Hub Integrated Manual</h1>
-    <p>Generated at 2026-05-04T13:49:09Z. This file combines root docs, docs/*.md, and selected implementation snapshots into one navigable HTML manual.</p>
+    <h1>Task Memory Hub 통합 매뉴얼</h1>
+    <p>생성 시각: 2026-05-04T14:06:57Z. 루트 문서, docs/*.md, 주요 구현 파일을 한글 중심 탐색 구조로 묶은 운영 매뉴얼입니다.</p>
   </header>
   <div class="layout">
     <nav>
       <h2>목차</h2>
       <ul>
-        <li><a href="#readme-md">Task Memory Hub</a><span>README.md</span>
+        <li><a href="#manual-overview">TMH 통합 매뉴얼 사용법</a><span>운영 요약</span></li>
+        <li><a href="#readme-md">제품 개요와 빠른 시작</a><span>README.md</span>
 <ul>
 <li><a href="#readme-md-what-works-today">What Works Today</a></li>
 <li><a href="#readme-md-public-repository-scope">Public Repository Scope</a></li>
@@ -113,7 +141,7 @@
 <li><a href="#readme-md-license">License</a></li>
 </ul>
 </li>
-<li><a href="#agents-md">Task Memory Hub Agent Guide</a><span>AGENTS.md</span>
+<li><a href="#agents-md">에이전트 작업 규칙</a><span>AGENTS.md</span>
 <ul>
 <li><a href="#agents-md-scope">Scope</a></li>
 <li><a href="#agents-md-source-of-truth">Source Of Truth</a></li>
@@ -129,7 +157,7 @@
 <li><a href="#agents-md-editing-policy">Editing Policy</a></li>
 </ul>
 </li>
-<li><a href="#design-md">Task Memory Hub Design Guide</a><span>DESIGN.md</span>
+<li><a href="#design-md">웹 UI 설계 기준</a><span>DESIGN.md</span>
 <ul>
 <li><a href="#design-md-product-feel">Product Feel</a></li>
 <li><a href="#design-md-primary-screens">Primary Screens</a></li>
@@ -143,7 +171,7 @@
 <li><a href="#design-md-agent-editing-rules">Agent Editing Rules</a></li>
 </ul>
 </li>
-<li><a href="#task-memory-hub-설계명세-md">Task Memory Hub 설계 명세</a><span>task-memory-hub-설계명세.md</span>
+<li><a href="#task-memory-hub-설계명세-md">원 설계명세</a><span>task-memory-hub-설계명세.md</span>
 <ul>
 <li><a href="#task-memory-hub-설계명세-md-2026-05-02-구현-기준-보정">2026-05-02 구현 기준 보정</a></li>
 <li><a href="#task-memory-hub-설계명세-md-요약">요약</a></li>
@@ -159,7 +187,7 @@
 <li><a href="#task-memory-hub-설계명세-md-sqlite에서-postgresql로의-이행-계획">SQLite에서 PostgreSQL로의 이행 계획</a></li>
 </ul>
 </li>
-<li><a href="#docs-agentic-workspace-control-plane-md">Agentic Workspace Control Plane</a><span>docs/agentic-workspace-control-plane.md</span>
+<li><a href="#docs-agentic-workspace-control-plane-md">에이전트 작업공간 제어면</a><span>docs/agentic-workspace-control-plane.md</span>
 <ul>
 <li><a href="#docs-agentic-workspace-control-plane-md-1-왜-이-문서가-필요한가">1. 왜 이 문서가 필요한가</a></li>
 <li><a href="#docs-agentic-workspace-control-plane-md-2-drift-점검">2. Drift 점검</a></li>
@@ -175,7 +203,7 @@
 <li><a href="#docs-agentic-workspace-control-plane-md-6-source-target-routing-field">6. Source / Target / Routing Field</a></li>
 </ul>
 </li>
-<li><a href="#docs-ci-necessity-review-md">CI Necessity Review</a><span>docs/ci-necessity-review.md</span>
+<li><a href="#docs-ci-necessity-review-md">CI 필요성 검토</a><span>docs/ci-necessity-review.md</span>
 <ul>
 <li><a href="#docs-ci-necessity-review-md-decision">Decision</a></li>
 <li><a href="#docs-ci-necessity-review-md-why-ci-is-needed">Why CI Is Needed</a></li>
@@ -184,7 +212,7 @@
 <li><a href="#docs-ci-necessity-review-md-stop-condition">Stop Condition</a></li>
 </ul>
 </li>
-<li><a href="#docs-cline-mcp-onprem-pilot-checklist-md">Cline MCP On-Prem Pilot Checklist</a><span>docs/cline-mcp-onprem-pilot-checklist.md</span>
+<li><a href="#docs-cline-mcp-onprem-pilot-checklist-md">Cline MCP 온프렘 파일럿</a><span>docs/cline-mcp-onprem-pilot-checklist.md</span>
 <ul>
 <li><a href="#docs-cline-mcp-onprem-pilot-checklist-md-목적">목적</a></li>
 <li><a href="#docs-cline-mcp-onprem-pilot-checklist-md-verified-locally">Verified Locally</a></li>
@@ -194,7 +222,7 @@
 <li><a href="#docs-cline-mcp-onprem-pilot-checklist-md-drift-guard">Drift Guard</a></li>
 </ul>
 </li>
-<li><a href="#docs-deepagents-backend-pilot-md">Deepagents Backend Pilot</a><span>docs/deepagents-backend-pilot.md</span>
+<li><a href="#docs-deepagents-backend-pilot-md">Deepagents 백엔드 파일럿</a><span>docs/deepagents-backend-pilot.md</span>
 <ul>
 <li><a href="#docs-deepagents-backend-pilot-md-목적">목적</a></li>
 <li><a href="#docs-deepagents-backend-pilot-md-현재-원칙">현재 원칙</a></li>
@@ -202,6 +230,21 @@
 <li><a href="#docs-deepagents-backend-pilot-md-smoke-stub">Smoke Stub</a></li>
 <li><a href="#docs-deepagents-backend-pilot-md-live-deepagents-연결-시-확인할-것">Live Deepagents 연결 시 확인할 것</a></li>
 <li><a href="#docs-deepagents-backend-pilot-md-p2-drift-guard">P2 Drift Guard</a></li>
+</ul>
+</li>
+<li><a href="#docs-external-adapter-plan-md">외부 연동 어댑터 계획</a><span>docs/external-adapter-plan.md</span>
+<ul>
+<li><a href="#docs-external-adapter-plan-md-목적">목적</a></li>
+<li><a href="#docs-external-adapter-plan-md-공통-원칙">공통 원칙</a></li>
+<li><a href="#docs-external-adapter-plan-md-openproject">OpenProject</a></li>
+<li><a href="#docs-external-adapter-plan-md-outlook-이메일">Outlook 이메일</a></li>
+<li><a href="#docs-external-adapter-plan-md-teams">Teams</a></li>
+<li><a href="#docs-external-adapter-plan-md-webhook">Webhook</a></li>
+<li><a href="#docs-external-adapter-plan-md-1-outbound-delivery-webhook">1. Outbound delivery webhook</a></li>
+<li><a href="#docs-external-adapter-plan-md-2-incoming-task-webhook">2. Incoming task webhook</a></li>
+<li><a href="#docs-external-adapter-plan-md-3-local-hook">3. Local hook</a></li>
+<li><a href="#docs-external-adapter-plan-md-다음-구현-순서">다음 구현 순서</a></li>
+<li><a href="#docs-external-adapter-plan-md-삭제-보류-조건">삭제/보류 조건</a></li>
 </ul>
 </li>
 <li><a href="#docs-handoff-progress-log-md">Task Memory Hub Handoff Progress Log</a><span>docs/handoff-progress-log.md</span>
@@ -231,7 +274,7 @@
 <li><a href="#docs-harness-profile-and-ai-action-intake-md-7-drift-점검">7. Drift 점검</a></li>
 </ul>
 </li>
-<li><a href="#docs-harness-runner-governance-development-spec-md">Harness Runner 및 Governance 개발 명세</a><span>docs/harness-runner-governance-development-spec.md</span>
+<li><a href="#docs-harness-runner-governance-development-spec-md">하니스 러너 거버넌스 개발 명세</a><span>docs/harness-runner-governance-development-spec.md</span>
 <ul>
 <li><a href="#docs-harness-runner-governance-development-spec-md-1-요약">1. 요약</a></li>
 <li><a href="#docs-harness-runner-governance-development-spec-md-2-현재-구현-기준선">2. 현재 구현 기준선</a></li>
@@ -257,7 +300,7 @@
 <li><a href="#docs-implementation-sanity-check-md-다음-구현-결정">다음 구현 결정</a></li>
 </ul>
 </li>
-<li><a href="#docs-postgres-slow-track-md">PostgreSQL Slow Track</a><span>docs/postgres-slow-track.md</span>
+<li><a href="#docs-postgres-slow-track-md">PostgreSQL 전환 준비</a><span>docs/postgres-slow-track.md</span>
 <ul>
 <li><a href="#docs-postgres-slow-track-md-1-현재-방침">1. 현재 방침</a></li>
 <li><a href="#docs-postgres-slow-track-md-2-windows-11-전환-준비-시-확인할-것">2. Windows 11 전환 준비 시 확인할 것</a></li>
@@ -273,7 +316,7 @@
 <li><a href="#docs-postgres-slow-track-md-migration-분리">migration 분리</a></li>
 </ul>
 </li>
-<li><a href="#docs-public-progress-md">Public Progress Summary</a><span>docs/public-progress.md</span>
+<li><a href="#docs-public-progress-md">공개 진행 요약</a><span>docs/public-progress.md</span>
 <ul>
 <li><a href="#docs-public-progress-md-goal">Goal</a></li>
 <li><a href="#docs-public-progress-md-implemented">Implemented</a></li>
@@ -302,7 +345,7 @@
 <li><a href="#docs-public-release-plan-md-mvp-quality-bar">MVP Quality Bar</a></li>
 </ul>
 </li>
-<li><a href="#docs-review-gate-flow-md">Review Gate Flow</a><span>docs/review-gate-flow.md</span>
+<li><a href="#docs-review-gate-flow-md">Review Gate와 전달 드라이런</a><span>docs/review-gate-flow.md</span>
 <ul>
 <li><a href="#docs-review-gate-flow-md-purpose">Purpose</a></li>
 <li><a href="#docs-review-gate-flow-md-model">Model</a></li>
@@ -324,7 +367,7 @@
 <li><a href="#docs-script-ref-backend-allowlist-md-guardrails">Guardrails</a></li>
 </ul>
 </li>
-<li><a href="#docs-task-execution-contract-standard-md">Task Execution Contract Standard</a><span>docs/task-execution-contract-standard.md</span>
+<li><a href="#docs-task-execution-contract-standard-md">작업 실행 계약 표준</a><span>docs/task-execution-contract-standard.md</span>
 <ul>
 <li><a href="#docs-task-execution-contract-standard-md-1-목적">1. 목적</a></li>
 <li><a href="#docs-task-execution-contract-standard-md-2-핵심-원칙">2. 핵심 원칙</a></li>
@@ -339,7 +382,7 @@
 <li><a href="#docs-task-execution-contract-standard-md-11-drift-check">11. Drift Check</a></li>
 </ul>
 </li>
-<li><a href="#docs-task-title-standard-md">TMH 작업 제목 작성 표준</a><span>docs/task-title-standard.md</span>
+<li><a href="#docs-task-title-standard-md">작업 제목 작성 표준</a><span>docs/task-title-standard.md</span>
 <ul>
 <li><a href="#docs-task-title-standard-md-1-목적">1. 목적</a></li>
 <li><a href="#docs-task-title-standard-md-2-기본-규칙">2. 기본 규칙</a></li>
@@ -349,7 +392,7 @@
 <li><a href="#docs-task-title-standard-md-6-향후-구현-후보">6. 향후 구현 후보</a></li>
 </ul>
 </li>
-<li><a href="#docs-verification-manual-md">TMH Verification Manual</a><span>docs/verification-manual.md</span>
+<li><a href="#docs-verification-manual-md">검증 명령 매뉴얼</a><span>docs/verification-manual.md</span>
 <ul>
 <li><a href="#docs-verification-manual-md-목적">목적</a></li>
 <li><a href="#docs-verification-manual-md-빠른-결론">빠른 결론</a></li>
@@ -374,7 +417,7 @@
 <li><a href="#docs-web-ui-design-application-md-next-ui-iteration">Next UI Iteration</a></li>
 </ul>
 </li>
-<li><a href="#docs-web-ui-screen-guide-md">Web UI Screen Guide</a><span>docs/web-ui-screen-guide.md</span>
+<li><a href="#docs-web-ui-screen-guide-md">Web UI 화면 설명서</a><span>docs/web-ui-screen-guide.md</span>
 <ul>
 <li><a href="#docs-web-ui-screen-guide-md-purpose">Purpose</a></li>
 <li><a href="#docs-web-ui-screen-guide-md-task-list-screen">Task List Screen</a></li>
@@ -390,7 +433,7 @@
 <li><a href="#docs-web-ui-screen-guide-md-hierarchy-contract-and-events">Hierarchy, Contract, And Events</a></li>
 </ul>
 </li>
-<li><a href="#docs-windows-install-standard-md">Windows Install Standard</a><span>docs/windows-install-standard.md</span>
+<li><a href="#docs-windows-install-standard-md">Windows 설치 표준</a><span>docs/windows-install-standard.md</span>
 <ul>
 <li><a href="#docs-windows-install-standard-md-decision">Decision</a></li>
 <li><a href="#docs-windows-install-standard-md-what-exists-today">What Exists Today</a></li>
@@ -443,11 +486,33 @@
       </ul>
     </nav>
     <main>
-      
+
+    <section class="doc-section overview" id="manual-overview">
+      <div class="section-kicker">운영 요약</div>
+      <h2>TMH 통합 매뉴얼 사용법</h2>
+      <p class="summary">이 HTML은 TMH의 운영 문서, 설계 문서, 검증 명령, 주요 구현 파일을 한 화면에서 탐색하기 위한 통합 매뉴얼이다. 생성 시각: 2026-05-04T14:06:57Z.</p>
+      <div class="callout-grid">
+        <div>
+          <h3>현재 제품 단계</h3>
+          <p>P0-P5 로컬 우선 파일럿 단계다. Task DB와 task event log가 런타임 source of truth이고, CLI/API/MCP/Web UI는 같은 DB를 조작하는 표면이다.</p>
+        </div>
+        <div>
+          <h3>외부 연동 원칙</h3>
+          <p>OpenProject와 Outlook 이메일은 review gate와 delivery dry-run을 통과한 뒤 pilot한다. Teams는 보류한다. Webhook은 raw URL 저장 없이 endpoint reference와 auth profile reference 기반으로 설계한다.</p>
+        </div>
+        <div>
+          <h3>검증 기준</h3>
+          <p>변경 후에는 compile, JS syntax, CI smoke, MCP smoke, P5 delivery dry-run, 필요한 경우 live Deepagents smoke를 수행한다. 구체 명령은 검증 명령 매뉴얼 섹션을 따른다.</p>
+        </div>
+      </div>
+    </section>
+
+
     <section class="doc-section" id="readme-md">
       <div class="section-kicker">manual / README.md</div>
-      <h2>Task Memory Hub</h2>
-      <p class="summary">Task Memory Hub is a Windows-local, local-first task and alarm hub for humans and AI agents. It keeps tasks, due reminders, agent claims, approval decisions, runner events, and automation definitions in one durable database so CLI, Web UI, </p>
+      <h2>제품 개요와 빠른 시작</h2>
+      <p class="summary">TMH의 현재 기능, 설치, 빠른 시작, 구조, 로드맵을 설명하는 제품 진입 문서다.</p>
+      <p class="source-note">원문 제목: Task Memory Hub. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="readme-md-task-memory-hub">Task Memory Hub</h1>
 
@@ -616,6 +681,7 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/tasks `
 <li><code>docs/task-execution-contract-standard.md</code>: task kind, automation, workflow run, and execution contract model.</li>
 <li><code>docs/harness-runner-governance-development-spec.md</code>: orchestrator/runner/backend governance design.</li>
 <li><code>docs/review-gate-flow.md</code>: P5 human review-gate workflow.</li>
+<li><code>docs/external-adapter-plan.md</code>: OpenProject, Outlook email, Teams hold, and Webhook adapter plan.</li>
 <li><code>docs/task-title-standard.md</code>: Korean-first task title standard.</li>
 <li><code>docs/postgres-slow-track.md</code>: PostgreSQL migration preparation notes.</li>
 </ul>
@@ -658,11 +724,12 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/tasks `
 <p>MIT. See <code>LICENSE</code>.</p>
       </div>
     </section>
-    
+
     <section class="doc-section" id="agents-md">
       <div class="section-kicker">manual / AGENTS.md</div>
-      <h2>Task Memory Hub Agent Guide</h2>
-      <p class="summary">This file applies to this repository root.</p>
+      <h2>에이전트 작업 규칙</h2>
+      <p class="summary">이 저장소에서 Codex/Cline류 에이전트가 따라야 하는 source of truth, 구현 우선순위, 검증 기준, 금지사항을 정의한다.</p>
+      <p class="source-note">원문 제목: Task Memory Hub Agent Guide. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="agents-md-task-memory-hub-agent-guide">Task Memory Hub Agent Guide</h1>
 
@@ -688,6 +755,7 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/tasks `
 <li>Agentic workspace control-plane design: <code>docs/agentic-workspace-control-plane.md</code>.</li>
 <li>Task kind, automation, workflow/run contract standard: <code>docs/task-execution-contract-standard.md</code>.</li>
 <li>Harness runner, resident agent, governance, and Ralph audit model: <code>docs/harness-runner-governance-development-spec.md</code>.</li>
+<li>External adapter plan: <code>docs/external-adapter-plan.md</code>.</li>
 <li>Task title writing standard: <code>docs/task-title-standard.md</code>.</li>
 <li>PostgreSQL slow-track notes: <code>docs/postgres-slow-track.md</code>.</li>
 <li>The runtime source of truth should be the task database, not in-memory timers or only Markdown files.</li>
@@ -858,11 +926,12 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/tasks `
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="design-md">
       <div class="section-kicker">manual / DESIGN.md</div>
-      <h2>Task Memory Hub Design Guide</h2>
-      <p class="summary">This file is a TMH-specific design delta. Use the default Codex <code>webapp-builder</code> skill as the baseline for frontend workflow, responsive layout, accessibility, and implementation quality. Apply this file only where TMH needs stricter produc</p>
+      <h2>웹 UI 설계 기준</h2>
+      <p class="summary">작업자가 매일 사용하는 제어면으로서 Web UI가 가져야 할 정보 밀도, 가시성, 통제성을 정리한다.</p>
+      <p class="source-note">원문 제목: Task Memory Hub Design Guide. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="design-md-task-memory-hub-design-guide">Task Memory Hub Design Guide</h1>
 
@@ -994,11 +1063,12 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/tasks `
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="task-memory-hub-설계명세-md">
       <div class="section-kicker">manual / task-memory-hub-설계명세.md</div>
-      <h2>Task Memory Hub 설계 명세</h2>
-      <p class="summary">이 문서는 초기 제품 설계 명세다. 현재 구현과 운영 결정은 아래 보정 기준을 함께 따른다.</p>
+      <h2>원 설계명세</h2>
+      <p class="summary">Windows 로컬 우선 task/alarm/agent hub의 원래 설계 의도와 핵심 요구사항을 담고 있다.</p>
+      <p class="source-note">원문 제목: Task Memory Hub 설계 명세. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="task-memory-hub-설계명세-md-task-memory-hub-설계-명세">Task Memory Hub 설계 명세</h1>
 
@@ -1477,11 +1547,12 @@ tmh_01HX...</code></pre>
 <p>가장 좋은 첫 릴리스는 **PostgreSQL + loopback web/API + STDIO MCP + DB-backed scheduler/outbox + SMTP/RSS + minimal UI** 조합이다. Teams, OpenProject, Windows toast는 그 위에 차례로 얹으면 된다. 이 순서를 따르면 Cline이 만든 TODO는 더 이상 워크스페이스 안에 갇히지 않고, **안전하고 재개 가능한 작업 메모리**로 동작한다.</p>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-agentic-workspace-control-plane-md">
       <div class="section-kicker">docs / docs/agentic-workspace-control-plane.md</div>
-      <h2>Agentic Workspace Control Plane</h2>
+      <h2>에이전트 작업공간 제어면</h2>
       <p class="summary">작성일: 2026-05-01</p>
+      <p class="source-note">원문 제목: Agentic Workspace Control Plane. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-agentic-workspace-control-plane-md-agentic-workspace-control-plane">Agentic Workspace Control Plane</h1>
 
@@ -2029,11 +2100,12 @@ tmh_01HX...</code></pre>
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-ci-necessity-review-md">
       <div class="section-kicker">docs / docs/ci-necessity-review.md</div>
-      <h2>CI Necessity Review</h2>
+      <h2>CI 필요성 검토</h2>
       <p class="summary">Updated: 2026-05-03</p>
+      <p class="source-note">원문 제목: CI Necessity Review. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-ci-necessity-review-md-ci-necessity-review">CI Necessity Review</h1>
 
@@ -2102,11 +2174,12 @@ tmh_01HX...</code></pre>
 <p>When those land, add focused jobs instead of expanding this smoke test into a broad integration harness.</p>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-cline-mcp-onprem-pilot-checklist-md">
       <div class="section-kicker">docs / docs/cline-mcp-onprem-pilot-checklist.md</div>
-      <h2>Cline MCP On-Prem Pilot Checklist</h2>
+      <h2>Cline MCP 온프렘 파일럿</h2>
       <p class="summary">On-prem Cline에서 TMH를 MCP server로 붙여 task 생성, 승인, runner dry-run까지 이어지는 최소 workflow를 검증한다. 이 문서는 사용자의 실제 on-prem 환경에서 실행할 체크리스트이고, repo의 기본 검증은 전역 Cline 설정을 수정하지 않는 direct STDIO MCP smoke로 수행한다.</p>
+      <p class="source-note">원문 제목: Cline MCP On-Prem Pilot Checklist. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-cline-mcp-onprem-pilot-checklist-md-cline-mcp-on-prem-pilot-checklist">Cline MCP On-Prem Pilot Checklist</h1>
 
@@ -2185,11 +2258,12 @@ tmh_01HX...</code></pre>
 
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-deepagents-backend-pilot-md">
       <div class="section-kicker">docs / docs/deepagents-backend-pilot.md</div>
-      <h2>Deepagents Backend Pilot</h2>
+      <h2>Deepagents 백엔드 파일럿</h2>
       <p class="summary">TMH의 harness runner가 Deepagents 같은 상주/headless agent backend를 호출할 수 있는지 확인한다. P2의 목표는 live model execution이 아니라 runner/backend contract, event trail, timeout, 실패 처리, operator visibility를 먼저 고정하는 것이다.</p>
+      <p class="source-note">원문 제목: Deepagents Backend Pilot. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-deepagents-backend-pilot-md-deepagents-backend-pilot">Deepagents Backend Pilot</h1>
 
@@ -2253,11 +2327,195 @@ python scripts\tmh-deepagents-smoke.py --exit-code 7 --prompt &quot;failure chec
 <p>이 단계에서는 TMH가 Deepagents 내부 구현을 흡수하지 않는다. TMH는 orchestration, policy, task event log, audit visibility를 담당하고, Deepagents는 실행 backend로만 연결한다.</p>
       </div>
     </section>
-    
+
+    <section class="doc-section" id="docs-external-adapter-plan-md">
+      <div class="section-kicker">docs / docs/external-adapter-plan.md</div>
+      <h2>외부 연동 어댑터 계획</h2>
+      <p class="summary">OpenProject, Outlook 이메일, Teams, Webhook 연동을 어떤 순서와 안전장치로 붙일지 정리한다.</p>
+      <p class="source-note">원문 제목: 외부 연동 어댑터 계획. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
+      <div class="markdown-body">
+        <h1 id="docs-external-adapter-plan-md-외부-연동-어댑터-계획">외부 연동 어댑터 계획</h1>
+
+<p>Updated: 2026-05-04</p>
+
+<h2 id="docs-external-adapter-plan-md-목적">목적</h2>
+
+<p>TMH의 외부 연동은 task를 실제 외부 시스템에 쓰기 전에 사람이 볼 수 있는 review gate, delivery dry-run, event trail을 통과해야 한다. 이 문서는 OpenProject, Outlook 이메일, Teams, Webhook 연동의 현재 방침을 고정한다.</p>
+
+<h2 id="docs-external-adapter-plan-md-공통-원칙">공통 원칙</h2>
+
+<ul>
+<li>task DB와 task event log가 source of truth다.</li>
+<li>실제 외부 write는 <code>delivery dry-run</code>과 review gate 이후에만 붙인다.</li>
+<li>task 본문, <code>next_action</code>, <code>detail_md</code>에 적힌 URL이나 명령은 실행하지 않는다.</li>
+<li>secret 값은 저장하지 않는다. <code>auth_profile_ref</code>, <code>secret_ref</code>, 환경변수 이름 같은 reference만 저장한다.</li>
+<li>모든 외부 write는 성공/실패와 payload summary를 <code>task_events</code>에 남긴다.</li>
+<li>adapter별 실제 전송은 capability와 policy profile을 요구한다.</li>
+</ul>
+
+<h2 id="docs-external-adapter-plan-md-openproject">OpenProject</h2>
+
+<p>현재 사용 가능한 입력:</p>
+
+<ul>
+<li><code>OPENPROJECT_BASE_URL</code></li>
+<li><code>OPENPROJECT_API_KEY</code></li>
+</ul>
+
+<p>권장 범위:</p>
+
+<ul>
+<li>work package 조회</li>
+<li>work package activity/comment 추가</li>
+<li>제한적 description 업데이트</li>
+<li>status 변경은 별도 승인 후 허용</li>
+</ul>
+
+<p>구현 방침:</p>
+
+<ul>
+<li><code>OPENPROJECT_BASE_URL</code>과 <code>OPENPROJECT_API_KEY</code>는 환경변수에서 읽는다.</li>
+<li>task에는 직접 API key를 저장하지 않고 <code>auth_profile_ref=openproject-default</code> 같은 reference만 둔다.</li>
+<li>write 전에는 work package를 먼저 읽어 <code>lockVersion</code>을 확보한다.</li>
+<li>PATCH가 필요한 작업은 변경 diff summary를 먼저 <code>delivery dry-run</code> event에 남긴다.</li>
+<li>실제 write adapter는 <code>openproject-write</code> capability와 승인된 review gate를 요구한다.</li>
+<li>502/timeout은 무한 retry하지 않고 <code>delivery_failed</code> event로 남긴다.</li>
+</ul>
+
+<p>초기 pilot 후보:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh delivery dry-run tmh_example --channel openproject --recipient-ref openproject:work-package-52 --requires-review</code></pre>
+
+<h2 id="docs-external-adapter-plan-md-outlook-이메일">Outlook 이메일</h2>
+
+<p>현재 방침:</p>
+
+<ul>
+<li>Windows Outlook Desktop COM, 즉 <code>win32com.client</code> 기반으로 pilot한다.</li>
+<li>SMTP password나 mail API secret을 TMH에 저장하지 않는다.</li>
+<li>기본 동작은 <code>draft</code> 생성이다. 실제 send는 별도 승인 이후로 미룬다.</li>
+</ul>
+
+<p>권장 범위:</p>
+
+<ul>
+<li>Outlook 실행 가능 여부 확인</li>
+<li>계정/보낼 편지함 접근 가능 여부 확인</li>
+<li>draft 메일 생성</li>
+<li>첨부파일은 workspace-local artifact path reference만 사용</li>
+</ul>
+
+<p>구현 방침:</p>
+
+<ul>
+<li><code>pywin32</code>는 optional dependency로 둔다.</li>
+<li><code>delivery dry-run</code>에서 제목, 수신자 reference, 첨부 artifact 목록만 검증한다.</li>
+<li>첫 pilot은 <code>CreateItem(0)</code>으로 draft를 만들고 바로 보내지 않는다.</li>
+<li>실제 send는 <code>external-email-send</code> capability, review gate 승인, 그리고 별도 <code>--send</code> 명시 옵션이 모두 있을 때만 허용한다.</li>
+</ul>
+
+<h2 id="docs-external-adapter-plan-md-teams">Teams</h2>
+
+<p>현재 상태: 보류.</p>
+
+<p>보류 이유:</p>
+
+<ul>
+<li>Teams Graph API, webhook, desktop automation 중 어떤 경로를 쓸지 아직 결정하지 않았다.</li>
+<li>조직 정책과 인증 방식에 따라 구현 난이도와 보안 리스크가 크게 달라진다.</li>
+<li>먼저 OpenProject와 Outlook draft pilot으로 외부 write 제어 패턴을 검증한다.</li>
+</ul>
+
+<h2 id="docs-external-adapter-plan-md-webhook">Webhook</h2>
+
+<p>Webhook은 기능을 바로 확정하지 않고 다음 세 가지 중 우선순위를 정한다.</p>
+
+<h3 id="docs-external-adapter-plan-md-1-outbound-delivery-webhook">1. Outbound delivery webhook</h3>
+
+<p>TMH task event나 artifact summary를 외부 endpoint로 POST한다.</p>
+
+<p>위험:</p>
+
+<ul>
+<li>raw webhook URL 저장 위험</li>
+<li>secret header 노출 위험</li>
+<li>retry storm 위험</li>
+</ul>
+
+<p>필수 조건:</p>
+
+<ul>
+<li>endpoint는 raw URL이 아니라 <code>network_profile</code> 또는 <code>webhook_profile</code> reference로 등록한다.</li>
+<li>auth는 <code>auth_profile_ref</code>만 사용한다.</li>
+<li>idempotency key와 retry limit을 둔다.</li>
+<li>기본은 dry-run이다.</li>
+</ul>
+
+<h3 id="docs-external-adapter-plan-md-2-incoming-task-webhook">2. Incoming task webhook</h3>
+
+<p>외부 시스템이 TMH에 task를 생성하거나 update하도록 받는다.</p>
+
+<p>위험:</p>
+
+<ul>
+<li>local-first loopback 모델과 충돌</li>
+<li>외부 노출 시 인증, Host/Origin, replay 방어 필요</li>
+</ul>
+
+<p>권장:</p>
+
+<ul>
+<li>현재는 보류한다.</li>
+<li>필요하면 Tailscale 또는 로컬 reverse proxy의 auth 정책이 먼저 있어야 한다.</li>
+</ul>
+
+<h3 id="docs-external-adapter-plan-md-3-local-hook">3. Local hook</h3>
+
+<p>외부 HTTP가 아니라 workspace-local script/hook reference를 호출한다.</p>
+
+<p>위험:</p>
+
+<ul>
+<li>arbitrary script 실행으로 drift 가능</li>
+</ul>
+
+<p>권장:</p>
+
+<ul>
+<li>이미 구현된 <code>script_ref</code> allowlist backend를 우선 사용한다.</li>
+<li>Webhook이라는 이름으로 shell command를 실행하지 않는다.</li>
+</ul>
+
+<h2 id="docs-external-adapter-plan-md-다음-구현-순서">다음 구현 순서</h2>
+
+<ul>
+<li>OpenProject read-only smoke: 환경변수 확인, <code>/api/v3</code> 접근, current user 또는 work package 조회.</li>
+<li>OpenProject dry-run write plan: comment/update payload summary를 event에 남긴다.</li>
+<li>Outlook COM smoke: Outlook profile 접근 가능 여부와 draft 생성 가능 여부를 확인한다.</li>
+<li>Outlook draft adapter: 실제 send 없이 draft만 생성한다.</li>
+<li>Webhook profile 설계: outbound/incoming/local hook 중 무엇을 먼저 지원할지 결정한다.</li>
+<li>Teams는 계속 보류한다.</li>
+</ul>
+
+<h2 id="docs-external-adapter-plan-md-삭제-보류-조건">삭제/보류 조건</h2>
+
+<p>다음 조건이면 adapter 구현을 보류한다.</p>
+
+<ul>
+<li>secret 값을 DB나 task payload에 저장해야 한다.</li>
+<li>review gate 없이 외부 write가 가능해야 한다.</li>
+<li>실패/성공 event를 남길 수 없다.</li>
+<li>raw URL이나 raw command를 task에서 직접 실행해야 한다.</li>
+<li>사람이 Web UI에서 어떤 외부 시스템에 무엇이 나가는지 볼 수 없다.</li>
+</ul>
+      </div>
+    </section>
+
     <section class="doc-section" id="docs-handoff-progress-log-md">
       <div class="section-kicker">docs / docs/handoff-progress-log.md</div>
       <h2>Task Memory Hub Handoff Progress Log</h2>
       <p class="summary">작성일: 2026-05-01 작업공간: <code>C:\Users\angpa\myProjects\Daily_Work\task-memory-hub</code></p>
+      <p class="source-note">원문 제목: Task Memory Hub Handoff Progress Log. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-handoff-progress-log-md-task-memory-hub-handoff-progress-log">Task Memory Hub Handoff Progress Log</h1>
 
@@ -4203,11 +4461,12 @@ Web UI
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-harness-profile-and-ai-action-intake-md">
       <div class="section-kicker">docs / docs/harness-profile-and-ai-action-intake.md</div>
       <h2>Harness Profile and AI Action Intake</h2>
       <p class="summary">작성일: 2026-05-01 작업공간: 이 repository root</p>
+      <p class="source-note">원문 제목: Harness Profile and AI Action Intake. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-harness-profile-and-ai-action-intake-md-harness-profile-and-ai-action-intake">Harness Profile and AI Action Intake</h1>
 
@@ -4350,11 +4609,12 @@ python -m task_memory_hub.cli ai-action add &quot;내일까지 TMH toast 기능 
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-harness-runner-governance-development-spec-md">
       <div class="section-kicker">docs / docs/harness-runner-governance-development-spec.md</div>
-      <h2>Harness Runner 및 Governance 개발 명세</h2>
+      <h2>하니스 러너 거버넌스 개발 명세</h2>
       <p class="summary">작성일: 2026-05-02</p>
+      <p class="source-note">원문 제목: Harness Runner 및 Governance 개발 명세. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-harness-runner-governance-development-spec-md-harness-runner-및-governance-개발-명세">Harness Runner 및 Governance 개발 명세</h1>
 
@@ -5195,11 +5455,12 @@ finalize(run_handle) -&gt; completion/failure summary</code></pre>
 <p>이 mapping은 초기 MVP 구현을 막는 선행조건은 아니지만, 외부 발송, 인사/법무/안전 등 고위험 업무를 다루기 전에는 필요하다.</p>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-implementation-sanity-check-md">
       <div class="section-kicker">docs / docs/implementation-sanity-check.md</div>
       <h2>Implementation Sanity Check</h2>
       <p class="summary">작성일: 2026-05-01</p>
+      <p class="source-note">원문 제목: Implementation Sanity Check. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-implementation-sanity-check-md-implementation-sanity-check">Implementation Sanity Check</h1>
 
@@ -5293,11 +5554,12 @@ finalize(run_handle) -&gt; completion/failure summary</code></pre>
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-postgres-slow-track-md">
       <div class="section-kicker">docs / docs/postgres-slow-track.md</div>
-      <h2>PostgreSQL Slow Track</h2>
+      <h2>PostgreSQL 전환 준비</h2>
       <p class="summary">작성일: 2026-05-01 작업공간: 이 repository root</p>
+      <p class="source-note">원문 제목: PostgreSQL Slow Track. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-postgres-slow-track-md-postgresql-slow-track">PostgreSQL Slow Track</h1>
 
@@ -5596,11 +5858,12 @@ RETURNING *;</code></pre>
 <p>이 스크립트는 기본적으로 dry-run이며, 실제 설치, service 생성, DB 계정 생성, 비밀번호 저장을 수행하지 않는다. 실제 설치 단계로 바꾸려면 별도 사용자 승인과 구현 변경이 필요하다.</p>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-public-progress-md">
       <div class="section-kicker">docs / docs/public-progress.md</div>
-      <h2>Public Progress Summary</h2>
+      <h2>공개 진행 요약</h2>
       <p class="summary">Updated: 2026-05-03</p>
+      <p class="source-note">원문 제목: Public Progress Summary. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-public-progress-md-public-progress-summary">Public Progress Summary</h1>
 
@@ -5707,11 +5970,12 @@ RETURNING *;</code></pre>
 <p>The project must remain a source-of-truth task hub and human-visible control plane. Cline, Deepagents, Codex, and scripts are clients or execution backends. They must not become hidden authorities that bypass DB events, approval state, provenance, or stop semantics.</p>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-public-release-plan-md">
       <div class="section-kicker">docs / docs/public-release-plan.md</div>
       <h2>Public Release Plan</h2>
       <p class="summary">Updated: 2026-05-03</p>
+      <p class="source-note">원문 제목: Public Release Plan. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-public-release-plan-md-public-release-plan">Public Release Plan</h1>
 
@@ -5820,11 +6084,12 @@ RETURNING *;</code></pre>
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-review-gate-flow-md">
       <div class="section-kicker">docs / docs/review-gate-flow.md</div>
-      <h2>Review Gate Flow</h2>
+      <h2>Review Gate와 전달 드라이런</h2>
       <p class="summary">Updated: 2026-05-03</p>
+      <p class="source-note">원문 제목: Review Gate Flow. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-review-gate-flow-md-review-gate-flow">Review Gate Flow</h1>
 
@@ -5966,11 +6231,12 @@ RETURNING *;</code></pre>
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-script-ref-backend-allowlist-md">
       <div class="section-kicker">docs / docs/script-ref-backend-allowlist.md</div>
       <h2>Script Ref Backend Allowlist</h2>
       <p class="summary"><code>script_ref</code> backend는 TMH runner가 operator-approved script를 호출할 수 있게 하는 P4 실행 경로다. 핵심은 task 본문이나 task JSON에 들어온 raw command를 실행하지 않고, allowlist에 등록된 named command만 실행하는 것이다.</p>
+      <p class="source-note">원문 제목: Script Ref Backend Allowlist. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-script-ref-backend-allowlist-md-script-ref-backend-allowlist">Script Ref Backend Allowlist</h1>
 
@@ -6035,11 +6301,12 @@ RETURNING *;</code></pre>
 
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-task-execution-contract-standard-md">
       <div class="section-kicker">docs / docs/task-execution-contract-standard.md</div>
-      <h2>Task Execution Contract Standard</h2>
+      <h2>작업 실행 계약 표준</h2>
       <p class="summary">작성일: 2026-05-02</p>
+      <p class="source-note">원문 제목: Task Execution Contract Standard. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-task-execution-contract-standard-md-task-execution-contract-standard">Task Execution Contract Standard</h1>
 
@@ -6347,11 +6614,12 @@ tmh --global automation list --status active --json</code></pre>
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-task-title-standard-md">
       <div class="section-kicker">docs / docs/task-title-standard.md</div>
-      <h2>TMH 작업 제목 작성 표준</h2>
+      <h2>작업 제목 작성 표준</h2>
       <p class="summary">작성일: 2026-05-03</p>
+      <p class="source-note">원문 제목: TMH 작업 제목 작성 표준. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-task-title-standard-md-tmh-작업-제목-작성-표준">TMH 작업 제목 작성 표준</h1>
 
@@ -6418,11 +6686,12 @@ tmh --global automation list --status active --json</code></pre>
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-verification-manual-md">
       <div class="section-kicker">docs / docs/verification-manual.md</div>
-      <h2>TMH Verification Manual</h2>
+      <h2>검증 명령 매뉴얼</h2>
       <p class="summary">Updated: 2026-05-04</p>
+      <p class="source-note">원문 제목: TMH Verification Manual. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-verification-manual-md-tmh-verification-manual">TMH Verification Manual</h1>
 
@@ -6732,11 +7001,12 @@ rg -n --hidden --glob &#x27;!*.egg-info/**&#x27; --glob &#x27;!.git/**&#x27; --g
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-web-ui-design-application-md">
       <div class="section-kicker">docs / docs/web-ui-design-application.md</div>
       <h2>Web UI Design Application</h2>
       <p class="summary">Updated: 2026-05-03</p>
+      <p class="source-note">원문 제목: Web UI Design Application. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-web-ui-design-application-md-web-ui-design-application">Web UI Design Application</h1>
 
@@ -6806,11 +7076,12 @@ rg -n --hidden --glob &#x27;!*.egg-info/**&#x27; --glob &#x27;!.git/**&#x27; --g
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-web-ui-screen-guide-md">
       <div class="section-kicker">docs / docs/web-ui-screen-guide.md</div>
-      <h2>Web UI Screen Guide</h2>
+      <h2>Web UI 화면 설명서</h2>
       <p class="summary">Updated: 2026-05-04</p>
+      <p class="source-note">원문 제목: Web UI Screen Guide. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-web-ui-screen-guide-md-web-ui-screen-guide">Web UI Screen Guide</h1>
 
@@ -7036,11 +7307,12 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/harnesses/har_...</code></pre>
 </ul>
       </div>
     </section>
-    
+
     <section class="doc-section" id="docs-windows-install-standard-md">
       <div class="section-kicker">docs / docs/windows-install-standard.md</div>
-      <h2>Windows Install Standard</h2>
+      <h2>Windows 설치 표준</h2>
       <p class="summary">Updated: 2026-05-03</p>
+      <p class="source-note">원문 제목: Windows Install Standard. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-windows-install-standard-md-windows-install-standard">Windows Install Standard</h1>
 
@@ -7187,13 +7459,13 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/harnesses/har_...</code></pre>
 | Is PostgreSQL required? | No. PostgreSQL remains a later migration target. |</code></pre>
       </div>
     </section>
-    
+
     <section class="doc-section source-section" id="pyproject-toml">
-      <div class="section-kicker">source / pyproject.toml</div>
+      <div class="section-kicker">구현 파일 / pyproject.toml</div>
       <h2>pyproject.toml</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 43.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 43.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>[project]
 name = &quot;task-memory-hub&quot;
 version = &quot;0.1.0&quot;
@@ -7239,13 +7511,13 @@ testpaths = [&quot;tests&quot;]
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-service-py">
-      <div class="section-kicker">source / task_memory_hub/service.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/service.py</div>
       <h2>task_memory_hub/service.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 1868.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 1868.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from pathlib import Path
@@ -9116,13 +9388,13 @@ def list_notification_attempts(
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-cli-py">
-      <div class="section-kicker">source / task_memory_hub/cli.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/cli.py</div>
       <h2>task_memory_hub/cli.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 1968.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 1968.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from pathlib import Path
@@ -11093,13 +11365,13 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-api-py">
-      <div class="section-kicker">source / task_memory_hub/api.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/api.py</div>
       <h2>task_memory_hub/api.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 2233.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 2233.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from http import HTTPStatus
@@ -13335,13 +13607,13 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-mcp_server-py">
-      <div class="section-kicker">source / task_memory_hub/mcp_server.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/mcp_server.py</div>
       <h2>task_memory_hub/mcp_server.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 682.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 682.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from pathlib import Path
@@ -14026,13 +14298,13 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-runner-py">
-      <div class="section-kicker">source / task_memory_hub/runner.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/runner.py</div>
       <h2>task_memory_hub/runner.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 545.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 545.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from pathlib import Path
@@ -14580,13 +14852,13 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-governance-py">
-      <div class="section-kicker">source / task_memory_hub/governance.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/governance.py</div>
       <h2>task_memory_hub/governance.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 119.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 119.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from typing import Any
@@ -14708,13 +14980,13 @@ def evaluate_runner_policy(
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-orchestrator-py">
-      <div class="section-kicker">source / task_memory_hub/orchestrator.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/orchestrator.py</div>
       <h2>task_memory_hub/orchestrator.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 181.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 181.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from pathlib import Path
@@ -14898,13 +15170,13 @@ def run_orchestrator_once(
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-registry-py">
-      <div class="section-kicker">source / task_memory_hub/registry.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/registry.py</div>
       <h2>task_memory_hub/registry.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 918.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 918.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from pathlib import Path
@@ -15825,13 +16097,13 @@ def record_sync_event(
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-store-py">
-      <div class="section-kicker">source / task_memory_hub/store.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/store.py</div>
       <h2>task_memory_hub/store.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 521.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 521.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from contextlib import contextmanager
@@ -16355,13 +16627,13 @@ def rows_to_dicts(rows: Iterable[sqlite3.Row]) -&gt; list[dict[str, Any]]:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-worker-py">
-      <div class="section-kicker">source / task_memory_hub/worker.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/worker.py</div>
       <h2>task_memory_hub/worker.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 175.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 175.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 import argparse
@@ -16539,13 +16811,13 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-notification_adapters-py">
-      <div class="section-kicker">source / task_memory_hub/notification_adapters.py</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/notification_adapters.py</div>
       <h2>task_memory_hub/notification_adapters.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 132.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 132.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from pathlib import Path
@@ -16680,13 +16952,13 @@ def dispatch_notification(job: dict[str, Any]) -&gt; dict[str, Any]:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-static-app-js">
-      <div class="section-kicker">source / task_memory_hub/static/app.js</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/static/app.js</div>
       <h2>task_memory_hub/static/app.js</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 135.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 135.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>function toggleTaskRow(toggle) {
   const targetId = toggle.getAttribute(&quot;data-row-toggle&quot;);
   const detailRow = document.getElementById(targetId);
@@ -16824,13 +17096,13 @@ document.addEventListener(&quot;keydown&quot;, (event) =&gt; {
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-static-task-detail-js">
-      <div class="section-kicker">source / task_memory_hub/static/task-detail.js</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/static/task-detail.js</div>
       <h2>task_memory_hub/static/task-detail.js</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 199.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 199.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>const configElement = document.getElementById(&quot;tmh-task-config&quot;);
 const config = configElement ? JSON.parse(configElement.textContent) : {};
 const result = document.getElementById(&quot;result&quot;);
@@ -17032,13 +17304,13 @@ document.addEventListener(&quot;click&quot;, (event) =&gt; {
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="task_memory_hub-static-app-css">
-      <div class="section-kicker">source / task_memory_hub/static/app.css</div>
+      <div class="section-kicker">구현 파일 / task_memory_hub/static/app.css</div>
       <h2>task_memory_hub/static/app.css</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 495.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 495.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>:root {
   --bg: #f6f7f9;
   --panel: #ffffff;
@@ -17536,13 +17808,13 @@ label {
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="scripts-ci-smoke-ps1">
-      <div class="section-kicker">source / scripts/ci-smoke.ps1</div>
+      <div class="section-kicker">구현 파일 / scripts/ci-smoke.ps1</div>
       <h2>scripts/ci-smoke.ps1</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 52.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 52.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>param(
     [string]$DbPath = &quot;.tmh\ci-smoke.sqlite&quot;,
     [int]$Port = 8798
@@ -17597,13 +17869,13 @@ Write-Host &quot;CI smoke passed for task $($task.task_id)&quot;
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="scripts-test-cline-mcp-pilot-ps1">
-      <div class="section-kicker">source / scripts/test-cline-mcp-pilot.ps1</div>
+      <div class="section-kicker">구현 파일 / scripts/test-cline-mcp-pilot.ps1</div>
       <h2>scripts/test-cline-mcp-pilot.ps1</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 148.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 148.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>param(
     [string]$DbPath = &quot;.tmh\cline-mcp-pilot.sqlite&quot;,
     [string]$ConfigDir = &quot;.cline-test&quot;,
@@ -17754,13 +18026,13 @@ finally {
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="scripts-tmh-deepagents-live-smoke-py">
-      <div class="section-kicker">source / scripts/tmh-deepagents-live-smoke.py</div>
+      <div class="section-kicker">구현 파일 / scripts/tmh-deepagents-live-smoke.py</div>
       <h2>scripts/tmh-deepagents-live-smoke.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 119.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 119.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 import argparse
@@ -17882,13 +18154,13 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
       </details>
     </section>
-    
+
     <section class="doc-section source-section" id="scripts-build-docs-manual-py">
-      <div class="section-kicker">source / scripts/build-docs-manual.py</div>
+      <div class="section-kicker">구현 파일 / scripts/build-docs-manual.py</div>
       <h2>scripts/build-docs-manual.py</h2>
-      <p class="summary">Source snapshot included for implementation traceability. Lines: 357.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 451.</p>
       <details>
-        <summary>Open source snapshot</summary>
+        <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -17899,6 +18171,35 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / &quot;docs&quot; / &quot;manual.html&quot;
+
+KOREAN_TITLES = {
+    &quot;README.md&quot;: &quot;제품 개요와 빠른 시작&quot;,
+    &quot;AGENTS.md&quot;: &quot;에이전트 작업 규칙&quot;,
+    &quot;DESIGN.md&quot;: &quot;웹 UI 설계 기준&quot;,
+    &quot;task-memory-hub-설계명세.md&quot;: &quot;원 설계명세&quot;,
+    &quot;docs/agentic-workspace-control-plane.md&quot;: &quot;에이전트 작업공간 제어면&quot;,
+    &quot;docs/ci-necessity-review.md&quot;: &quot;CI 필요성 검토&quot;,
+    &quot;docs/cline-mcp-onprem-pilot-checklist.md&quot;: &quot;Cline MCP 온프렘 파일럿&quot;,
+    &quot;docs/deepagents-backend-pilot.md&quot;: &quot;Deepagents 백엔드 파일럿&quot;,
+    &quot;docs/external-adapter-plan.md&quot;: &quot;외부 연동 어댑터 계획&quot;,
+    &quot;docs/harness-runner-governance-development-spec.md&quot;: &quot;하니스 러너 거버넌스 개발 명세&quot;,
+    &quot;docs/postgres-slow-track.md&quot;: &quot;PostgreSQL 전환 준비&quot;,
+    &quot;docs/public-progress.md&quot;: &quot;공개 진행 요약&quot;,
+    &quot;docs/review-gate-flow.md&quot;: &quot;Review Gate와 전달 드라이런&quot;,
+    &quot;docs/task-execution-contract-standard.md&quot;: &quot;작업 실행 계약 표준&quot;,
+    &quot;docs/task-title-standard.md&quot;: &quot;작업 제목 작성 표준&quot;,
+    &quot;docs/verification-manual.md&quot;: &quot;검증 명령 매뉴얼&quot;,
+    &quot;docs/web-ui-screen-guide.md&quot;: &quot;Web UI 화면 설명서&quot;,
+    &quot;docs/windows-install-standard.md&quot;: &quot;Windows 설치 표준&quot;,
+}
+
+KOREAN_SUMMARIES = {
+    &quot;README.md&quot;: &quot;TMH의 현재 기능, 설치, 빠른 시작, 구조, 로드맵을 설명하는 제품 진입 문서다.&quot;,
+    &quot;AGENTS.md&quot;: &quot;이 저장소에서 Codex/Cline류 에이전트가 따라야 하는 source of truth, 구현 우선순위, 검증 기준, 금지사항을 정의한다.&quot;,
+    &quot;DESIGN.md&quot;: &quot;작업자가 매일 사용하는 제어면으로서 Web UI가 가져야 할 정보 밀도, 가시성, 통제성을 정리한다.&quot;,
+    &quot;task-memory-hub-설계명세.md&quot;: &quot;Windows 로컬 우선 task/alarm/agent hub의 원래 설계 의도와 핵심 요구사항을 담고 있다.&quot;,
+    &quot;docs/external-adapter-plan.md&quot;: &quot;OpenProject, Outlook 이메일, Teams, Webhook 연동을 어떤 순서와 안전장치로 붙일지 정리한다.&quot;,
+}
 
 ROOT_MARKDOWN = [
     ROOT / &quot;README.md&quot;,
@@ -18055,17 +18356,27 @@ def first_paragraph(markdown: str) -&gt; str:
     return &quot;&quot;
 
 
+def display_title(path: Path, headings: list[tuple[int, str, str]]) -&gt; str:
+    return KOREAN_TITLES.get(rel(path), headings[0][1] if headings else rel(path))
+
+
+def display_summary(path: Path, markdown: str) -&gt; str:
+    return KOREAN_SUMMARIES.get(rel(path), first_paragraph(markdown))
+
+
 def render_doc_section(path: Path, group: str) -&gt; tuple[str, dict[str, object]]:
     content = read_text(path)
     section_id = slug(rel(path))
     rendered, headings = markdown_to_html(content, section_id)
-    title = headings[0][1] if headings else rel(path)
-    summary = first_paragraph(content)
+    title = display_title(path, headings)
+    summary = display_summary(path, content)
+    original_title = headings[0][1] if headings else rel(path)
     section = f&quot;&quot;&quot;
     &lt;section class=&quot;doc-section&quot; id=&quot;{section_id}&quot;&gt;
       &lt;div class=&quot;section-kicker&quot;&gt;{escape(group)} / {escape(rel(path))}&lt;/div&gt;
       &lt;h2&gt;{escape(title)}&lt;/h2&gt;
-      &lt;p class=&quot;summary&quot;&gt;{inline_markdown(summary) if summary else &quot;No summary paragraph detected.&quot;}&lt;/p&gt;
+      &lt;p class=&quot;summary&quot;&gt;{inline_markdown(summary) if summary else &quot;요약 문단이 없습니다.&quot;}&lt;/p&gt;
+      &lt;p class=&quot;source-note&quot;&gt;원문 제목: {escape(original_title)}. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.&lt;/p&gt;
       &lt;div class=&quot;markdown-body&quot;&gt;
         {rendered}
       &lt;/div&gt;
@@ -18080,11 +18391,11 @@ def render_source_section(path: Path) -&gt; tuple[str, dict[str, object]]:
     lines = content.count(&quot;\n&quot;) + 1
     section = f&quot;&quot;&quot;
     &lt;section class=&quot;doc-section source-section&quot; id=&quot;{section_id}&quot;&gt;
-      &lt;div class=&quot;section-kicker&quot;&gt;source / {escape(rel(path))}&lt;/div&gt;
+      &lt;div class=&quot;section-kicker&quot;&gt;구현 파일 / {escape(rel(path))}&lt;/div&gt;
       &lt;h2&gt;{escape(rel(path))}&lt;/h2&gt;
-      &lt;p class=&quot;summary&quot;&gt;Source snapshot included for implementation traceability. Lines: {lines}.&lt;/p&gt;
+      &lt;p class=&quot;summary&quot;&gt;구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: {lines}.&lt;/p&gt;
       &lt;details&gt;
-        &lt;summary&gt;Open source snapshot&lt;/summary&gt;
+        &lt;summary&gt;구현 파일 내용 열기&lt;/summary&gt;
         &lt;pre class=&quot;code-block&quot;&gt;&lt;code&gt;{escape(content)}&lt;/code&gt;&lt;/pre&gt;
       &lt;/details&gt;
     &lt;/section&gt;
@@ -18104,6 +18415,30 @@ def render_toc(entries: list[dict[str, object]]) -&gt; str:
             items.append(&quot;&lt;/ul&gt;&quot;)
         items.append(&quot;&lt;/li&gt;&quot;)
     return &quot;\n&quot;.join(items)
+
+
+def render_overview(generated_at: str) -&gt; str:
+    return f&quot;&quot;&quot;
+    &lt;section class=&quot;doc-section overview&quot; id=&quot;manual-overview&quot;&gt;
+      &lt;div class=&quot;section-kicker&quot;&gt;운영 요약&lt;/div&gt;
+      &lt;h2&gt;TMH 통합 매뉴얼 사용법&lt;/h2&gt;
+      &lt;p class=&quot;summary&quot;&gt;이 HTML은 TMH의 운영 문서, 설계 문서, 검증 명령, 주요 구현 파일을 한 화면에서 탐색하기 위한 통합 매뉴얼이다. 생성 시각: {escape(generated_at)}.&lt;/p&gt;
+      &lt;div class=&quot;callout-grid&quot;&gt;
+        &lt;div&gt;
+          &lt;h3&gt;현재 제품 단계&lt;/h3&gt;
+          &lt;p&gt;P0-P5 로컬 우선 파일럿 단계다. Task DB와 task event log가 런타임 source of truth이고, CLI/API/MCP/Web UI는 같은 DB를 조작하는 표면이다.&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;h3&gt;외부 연동 원칙&lt;/h3&gt;
+          &lt;p&gt;OpenProject와 Outlook 이메일은 review gate와 delivery dry-run을 통과한 뒤 pilot한다. Teams는 보류한다. Webhook은 raw URL 저장 없이 endpoint reference와 auth profile reference 기반으로 설계한다.&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;h3&gt;검증 기준&lt;/h3&gt;
+          &lt;p&gt;변경 후에는 compile, JS syntax, CI smoke, MCP smoke, P5 delivery dry-run, 필요한 경우 live Deepagents smoke를 수행한다. 구체 명령은 검증 명령 매뉴얼 섹션을 따른다.&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+    &quot;&quot;&quot;
 
 
 def main() -&gt; int:
@@ -18132,7 +18467,8 @@ def main() -&gt; int:
 &lt;head&gt;
   &lt;meta charset=&quot;utf-8&quot;&gt;
   &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
-  &lt;title&gt;Task Memory Hub Integrated Manual&lt;/title&gt;
+  &lt;link rel=&quot;icon&quot; href=&quot;data:,&quot;&gt;
+  &lt;title&gt;Task Memory Hub 통합 매뉴얼&lt;/title&gt;
   &lt;style&gt;
     :root {{
       color-scheme: light;
@@ -18200,20 +18536,46 @@ def main() -&gt; int:
     h2 {{ margin: 6px 0 8px; font-size: 22px; }}
     h3 {{ margin-top: 22px; }}
     .summary {{ color: var(--muted); border-left: 3px solid var(--accent); padding-left: 10px; }}
+    .source-note {{ color: var(--muted); font-size: 13px; }}
+    .callout-grid {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }}
+    .callout-grid &gt; div {{
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #f9fbfd;
+    }}
+    .callout-grid h3 {{ margin: 0 0 8px; font-size: 16px; }}
     code {{ background: #eef3f8; border-radius: 4px; padding: 1px 4px; }}
     .code-block, .table-block {{
       overflow: auto;
       background: var(--code);
-      color: #e5e7eb;
+      color: #f8fafc;
       border-radius: 6px;
       padding: 12px;
       line-height: 1.45;
-      font-size: 12px;
+      font-size: 13px;
+      white-space: pre;
+      border: 1px solid #1f2937;
+    }}
+    .code-block code,
+    .table-block code {{
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      font: inherit;
+      white-space: pre;
     }}
     details summary {{ cursor: pointer; color: var(--accent); font-weight: 700; }}
     a {{ color: var(--accent); }}
     @media (max-width: 900px) {{
       .layout {{ grid-template-columns: 1fr; padding: 12px; }}
+      .callout-grid {{ grid-template-columns: 1fr; }}
       nav {{ position: static; max-height: none; }}
       header {{ padding: 20px 16px; }}
     }}
@@ -18221,24 +18583,28 @@ def main() -&gt; int:
 &lt;/head&gt;
 &lt;body&gt;
   &lt;header&gt;
-    &lt;h1&gt;Task Memory Hub Integrated Manual&lt;/h1&gt;
-    &lt;p&gt;Generated at {generated_at}. This file combines root docs, docs/*.md, and selected implementation snapshots into one navigable HTML manual.&lt;/p&gt;
+    &lt;h1&gt;Task Memory Hub 통합 매뉴얼&lt;/h1&gt;
+    &lt;p&gt;생성 시각: {generated_at}. 루트 문서, docs/*.md, 주요 구현 파일을 한글 중심 탐색 구조로 묶은 운영 매뉴얼입니다.&lt;/p&gt;
   &lt;/header&gt;
   &lt;div class=&quot;layout&quot;&gt;
     &lt;nav&gt;
       &lt;h2&gt;목차&lt;/h2&gt;
       &lt;ul&gt;
+        &lt;li&gt;&lt;a href=&quot;#manual-overview&quot;&gt;TMH 통합 매뉴얼 사용법&lt;/a&gt;&lt;span&gt;운영 요약&lt;/span&gt;&lt;/li&gt;
         {render_toc(entries)}
       &lt;/ul&gt;
     &lt;/nav&gt;
     &lt;main&gt;
+      {render_overview(generated_at)}
       {&#x27;&#x27;.join(sections)}
     &lt;/main&gt;
   &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 &quot;&quot;&quot;
-    OUTPUT.write_text(html, encoding=&quot;utf-8&quot;)
+    html = html.replace(&quot;\r\n&quot;, &quot;\n&quot;).replace(&quot;\r&quot;, &quot;\n&quot;)
+    html = &quot;\n&quot;.join(line.rstrip() for line in html.splitlines()) + &quot;\n&quot;
+    OUTPUT.write_text(html, encoding=&quot;utf-8&quot;, newline=&quot;\n&quot;)
     print(f&quot;wrote {OUTPUT.relative_to(ROOT)}&quot;)
     return 0
 
@@ -18248,7 +18614,7 @@ if __name__ == &quot;__main__&quot;:
 </code></pre>
       </details>
     </section>
-    
+
     </main>
   </div>
 </body>

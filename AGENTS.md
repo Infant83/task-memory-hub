@@ -21,6 +21,7 @@ The project goal is to build a Windows 11 local-first alarm and task-memory hub 
 - Agentic workspace control-plane design: `docs/agentic-workspace-control-plane.md`.
 - Task kind, automation, workflow/run contract standard: `docs/task-execution-contract-standard.md`.
 - Harness runner, resident agent, governance, and Ralph audit model: `docs/harness-runner-governance-development-spec.md`.
+- External adapter plan: `docs/external-adapter-plan.md`.
 - Task title writing standard: `docs/task-title-standard.md`.
 - PostgreSQL slow-track notes: `docs/postgres-slow-track.md`.
 - The runtime source of truth should be the task database, not in-memory timers or only Markdown files.
