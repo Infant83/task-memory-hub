@@ -6,6 +6,8 @@
 
 이 커리큘럼은 Task Memory Hub를 처음 접하는 사용자가 “로컬 TODO 앱”으로 시작해 “agentic workflow control plane”의 기본 개념까지 손으로 확인하도록 설계한다. 강의 목표는 많은 기능을 설명하는 것이 아니라, 작업이 어디에 저장되고, 누가 요청하고, 누가 승인하고, 어떤 agent/runtime이 처리하는지 눈으로 추적하게 만드는 것이다.
 
+이 문서는 학습 목차다. 에이전트가 실제 세션에서 어떻게 설명하고, 실행하고, 재개할지는 `docs/agentic-hands-on-tutorial-mode.md`를 따른다.
+
 ## 대상
 
 - Windows 11에서 PowerShell을 사용할 수 있는 사용자
@@ -19,6 +21,10 @@
 - 외부 side effect는 review gate와 delivery dry-run까지만 실습한다.
 - Cline VS Code 확장 실습은 선택 모듈로 둔다. provider auth와 MCP approval UX가 준비된 환경에서만 진행한다.
 - PostgreSQL은 개념과 dry-run까지만 다루고 설치형 실습은 고급 과정으로 분리한다.
+
+## 재개 기준
+
+다른 세션에서 `다시 핸즈온을 시작하자`라고 하면 에이전트는 `docs/agentic-hands-on-tutorial-mode.md`의 재개 절차를 먼저 따른다. 진행 상태 task가 있으면 마지막 progress event와 next action을 기준으로 이어가고, 진행 상태가 없으면 모듈 0부터 시작한다.
 
 ## 전체 구성
 

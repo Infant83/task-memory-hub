@@ -173,6 +173,7 @@ Script execution uses `script_ref` allowlists. Task prose, `next_action`, `detai
 - `docs/public-progress.md`: public implementation summary.
 - `docs/public-release-plan.md`: public repository scope and cleanup plan.
 - `docs/manual.html`: generated integrated manual that combines docs and selected implementation snapshots.
+- `docs/agentic-hands-on-tutorial-mode.md`: reusable tutorial-mode protocol for agents so hands-on sessions can resume across chats.
 - `docs/newbie-hands-on-curriculum.md`: hands-on curriculum for new users.
 - `docs/verification-manual.md`: verification commands for CLI, API, MCP, Web UI, runner, worker, and public repo checks.
 - `docs/ci-necessity-review.md`: why the initial CI scope is intentionally small.

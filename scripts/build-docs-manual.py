@@ -14,6 +14,7 @@ KOREAN_TITLES = {
     "AGENTS.md": "에이전트 작업 규칙",
     "DESIGN.md": "웹 UI 설계 기준",
     "task-memory-hub-설계명세.md": "원 설계명세",
+    "docs/agentic-hands-on-tutorial-mode.md": "에이전트 핸즈온 튜토리얼 모드",
     "docs/agentic-workspace-control-plane.md": "에이전트 작업공간 제어면",
     "docs/ci-necessity-review.md": "CI 필요성 검토",
     "docs/cline-mcp-onprem-pilot-checklist.md": "Cline MCP 온프렘 파일럿",
@@ -39,6 +40,7 @@ KOREAN_SUMMARIES = {
     "task-memory-hub-설계명세.md": "Windows 로컬 우선 task/alarm/agent hub의 원래 설계 의도와 핵심 요구사항을 담고 있다.",
     "docs/external-adapter-plan.md": "OpenProject, Outlook 이메일, Teams, Webhook 연동을 어떤 순서와 안전장치로 붙일지 정리한다.",
     "docs/functionality-drift-audit.md": "현재 구현을 기능 스모크 결과와 원 설계 의도에 맞춰 비교하고, 유지/발전/되돌림 판단을 기록한다.",
+    "docs/agentic-hands-on-tutorial-mode.md": "다른 세션에서도 같은 방식으로 TMH 핸즈온을 시작하거나 이어갈 수 있도록 에이전트의 진행 규칙과 재개 절차를 정의한다.",
     "docs/newbie-hands-on-curriculum.md": "초보 사용자가 설치, 작업 등록, registry, control 화면, review gate, runner dry-run, global hub를 손으로 익히는 교육 흐름이다.",
 }
 

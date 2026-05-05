@@ -11,6 +11,8 @@ The project goal is to build a Windows 11 local-first alarm and task-memory hub 
 - Primary product/design reference: `task-memory-hub-설계명세.md`.
 - Product README and implementation plan: `README.md`.
 - Integrated HTML manual: `docs/manual.html`.
+- Agentic hands-on tutorial mode: `docs/agentic-hands-on-tutorial-mode.md`.
+- New user hands-on curriculum: `docs/newbie-hands-on-curriculum.md`.
 - Web UI design contract: `DESIGN.md`.
 - Web UI screen guide: `docs/web-ui-screen-guide.md`.
 - Windows install standard: `docs/windows-install-standard.md`.
@@ -92,6 +94,19 @@ The user wants "todo in everywhere":
 - immediate visibility when a human updates a task.
 
 Treat this as a P0 product requirement, not a later nice-to-have.
+
+## Agentic Hands-on Tutorial Mode
+
+When the user says `tmh 핸즈온 튜토리얼을 시작하자`, `다시 핸즈온을 시작하자`, `TMH 튜토리얼 이어서 하자`, or names a specific hands-on module, switch into the tutorial mode defined in `docs/agentic-hands-on-tutorial-mode.md`.
+
+In tutorial mode:
+
+- Read `docs/agentic-hands-on-tutorial-mode.md` and `docs/newbie-hands-on-curriculum.md` before teaching from memory.
+- Start from the requested module. If no module is specified, look for the `TMH 핸즈온 진행 상태` task and inspect its event trail. If no progress task exists, start from module 0.
+- Teach in a loop: goal, safety boundary, command/UI action, observed result, explanation, completion criterion, next starting point.
+- Prefer safe live execution for local CLI/API/Web UI checks, but do not perform external delivery, global Cline setting changes, destructive filesystem actions, or non-dry-run runner backends.
+- Record durable progress in the single `TMH 핸즈온 진행 상태` task when practical. Do not create many per-module progress tasks.
+- Always end the session with the exact module where the next session should resume.
 
 ## Implementation Priorities
 
