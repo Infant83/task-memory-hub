@@ -397,6 +397,46 @@ label {
   min-width: 92px;
 }
 
+.sort-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sort-link:hover {
+  color: var(--accent);
+}
+
+.sort-link.is-active {
+  color: var(--accent);
+}
+
+.task-filters {
+  margin: 12px 0 0;
+}
+
+.task-filter-form {
+  display: grid;
+  gap: 12px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .task-main-row:hover td {
   background: #f9fafb;
 }
@@ -497,6 +537,7 @@ label {
 
   .layout,
   .control-grid,
+  .filter-grid,
   .row {
     grid-template-columns: 1fr;
   }

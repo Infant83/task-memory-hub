@@ -3,7 +3,7 @@ from __future__ import annotations
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 import argparse
 import hmac
 import json
@@ -58,6 +58,9 @@ from .timeutil import iso_now
 
 ALLOWED_HOSTS = {"127.0.0.1", "localhost", "::1"}
 STATIC_DIR = Path(__file__).with_name("static")
+TASK_INDEX_SORT_KEYS = {"title", "status", "priority", "rank", "due", "created", "updated"}
+TASK_INDEX_DEFAULT_SORT = "rank"
+TASK_INDEX_PRIORITY_ORDER = {"urgent": 0, "high": 1, "normal": 2, "low": 3}
 
 
 def parse_json_body(handler: BaseHTTPRequestHandler) -> dict:
@@ -233,8 +236,14 @@ def make_handler(db_path: Path | str | None = None, write_token: str | None = No
                         self._send_html(HTTPStatus.OK, render_registry_record(registry_kind, identifier, record))
                         return
                 if path == "/":
-                    tasks = list_tasks(db_path=db_path, limit=100)
-                    self._send_html(HTTPStatus.OK, render_index(tasks))
+                    options = _task_index_options(query)
+                    all_tasks = list_tasks(db_path=db_path, limit=1000)
+                    filtered_tasks = _filter_index_tasks(all_tasks, options)
+                    sorted_tasks = _sort_index_tasks(filtered_tasks, options["sort"], options["dir"])
+                    options["raw_count"] = len(all_tasks)
+                    options["filtered_count"] = len(filtered_tasks)
+                    tasks = sorted_tasks[: options["limit"]]
+                    self._send_html(HTTPStatus.OK, render_index(tasks, options))
                     return
                 if path == "/control":
                     self._send_html(HTTPStatus.OK, render_control_plane(db_path))
@@ -794,6 +803,149 @@ def _short_id(value: object, chars: int = 7) -> str:
         prefix, suffix = text.split("_", 1)
         return f"{prefix}_{suffix[:chars]}"
     return text[: chars + 4]
+
+
+def _query_text(query: dict[str, list[str]], key: str, default: str = "") -> str:
+    values = query.get(key)
+    if not values:
+        return default
+    return str(values[0] or default).strip()
+
+
+def _bounded_int(value: str, default: int, minimum: int, maximum: int) -> int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return default
+    return max(minimum, min(maximum, parsed))
+
+
+def _task_index_options(query: dict[str, list[str]]) -> dict:
+    sort = _query_text(query, "sort", TASK_INDEX_DEFAULT_SORT).lower()
+    if sort not in TASK_INDEX_SORT_KEYS:
+        sort = TASK_INDEX_DEFAULT_SORT
+    direction = _query_text(query, "dir", "asc").lower()
+    if direction not in {"asc", "desc"}:
+        direction = "asc"
+    return {
+        "sort": sort,
+        "dir": direction,
+        "status": _query_text(query, "status"),
+        "priority": _query_text(query, "priority").lower(),
+        "kind": _query_text(query, "kind"),
+        "agent": _query_text(query, "agent"),
+        "q": _query_text(query, "q"),
+        "limit": _bounded_int(_query_text(query, "limit", "100"), 100, 10, 500),
+        "raw_count": 0,
+        "filtered_count": 0,
+    }
+
+
+def _contains_text(needle: str, *values: object) -> bool:
+    normalized = needle.casefold()
+    return any(normalized in str(value or "").casefold() for value in values)
+
+
+def _filter_index_tasks(tasks: list[dict], options: dict) -> list[dict]:
+    filtered = tasks
+    if options.get("status"):
+        filtered = [task for task in filtered if task.get("status") == options["status"]]
+    if options.get("priority"):
+        filtered = [task for task in filtered if str(task.get("priority") or "").lower() == options["priority"]]
+    if options.get("kind"):
+        filtered = [task for task in filtered if task.get("task_kind") == options["kind"]]
+    if options.get("agent"):
+        filtered = [
+            task
+            for task in filtered
+            if _contains_text(
+                options["agent"],
+                task.get("target_principal_id"),
+                task.get("agent_claim_owner"),
+                task.get("source_agent"),
+                task.get("assigned_by_principal_id"),
+            )
+        ]
+    if options.get("q"):
+        filtered = [
+            task
+            for task in filtered
+            if _contains_text(
+                options["q"],
+                task.get("title"),
+                task.get("summary"),
+                task.get("next_action"),
+                task.get("detail_md"),
+                task.get("task_id"),
+            )
+        ]
+    return filtered
+
+
+def _task_sort_missing(task: dict, sort_key: str) -> bool:
+    if sort_key == "due":
+        return not (task.get("snooze_until") or task.get("due_at"))
+    if sort_key == "rank":
+        return task.get("rank") in {None, ""}
+    if sort_key == "created":
+        return not task.get("created_at")
+    if sort_key == "updated":
+        return not task.get("updated_at")
+    return not task.get(sort_key)
+
+
+def _task_sort_value(task: dict, sort_key: str) -> object:
+    if sort_key == "priority":
+        return TASK_INDEX_PRIORITY_ORDER.get(str(task.get("priority") or "").lower(), 99)
+    if sort_key == "rank":
+        try:
+            return int(task.get("rank"))
+        except (TypeError, ValueError):
+            return 999999
+    if sort_key == "due":
+        return task.get("snooze_until") or task.get("due_at") or ""
+    if sort_key == "created":
+        return task.get("created_at") or ""
+    if sort_key == "updated":
+        return task.get("updated_at") or ""
+    return str(task.get(sort_key) or "").casefold()
+
+
+def _sort_index_tasks(tasks: list[dict], sort_key: str, direction: str) -> list[dict]:
+    present = [task for task in tasks if not _task_sort_missing(task, sort_key)]
+    missing = [task for task in tasks if _task_sort_missing(task, sort_key)]
+    present.sort(key=lambda task: _task_sort_value(task, sort_key), reverse=direction == "desc")
+    return present + missing
+
+
+def _task_index_url(options: dict, **updates: object) -> str:
+    params: dict[str, str] = {}
+    for key in ["sort", "dir", "status", "priority", "kind", "agent", "q", "limit"]:
+        value = updates[key] if key in updates else options.get(key, "")
+        if value not in {None, ""}:
+            params[key] = str(value)
+    return "/" + (f"?{urlencode(params)}" if params else "")
+
+
+def _sort_header(label: str, sort_key: str, options: dict) -> str:
+    active = options.get("sort") == sort_key
+    direction = options.get("dir", "asc")
+    next_direction = "desc" if active and direction == "asc" else "asc"
+    marker = " ↑" if active and direction == "asc" else " ↓" if active else ""
+    classes = "sort-link is-active" if active else "sort-link"
+    aria_sort = "ascending" if active and direction == "asc" else "descending" if active else "none"
+    return (
+        f'<a class="{classes}" href="{_esc(_task_index_url(options, sort=sort_key, dir=next_direction))}" '
+        f'aria-sort="{aria_sort}" title="{_esc(label)} 정렬 토글">{_esc(label)}{marker}</a>'
+    )
+
+
+def _select_options(values: list[tuple[str, str]], selected: str) -> str:
+    parts = []
+    for value, label in values:
+        selected_attr = " selected" if value == selected else ""
+        parts.append(f'<option value="{_esc(value)}"{selected_attr}>{_esc(label)}</option>')
+    return "\n".join(parts)
 
 
 def _lookup_principal(identifier: str | None, db_path: Path | str | None) -> dict | None:
@@ -1365,7 +1517,25 @@ def build_openapi_spec() -> dict:
             "/": {
                 "get": {
                     "tags": ["html"],
-                    "summary": "Minimal task list UI",
+                    "summary": "Task list UI with sorting and filters",
+                    "parameters": [
+                        query_param(
+                            "sort",
+                            {"type": "string", "enum": sorted(TASK_INDEX_SORT_KEYS), "default": TASK_INDEX_DEFAULT_SORT},
+                            "Sort column for the task list UI.",
+                        ),
+                        query_param(
+                            "dir",
+                            {"type": "string", "enum": ["asc", "desc"], "default": "asc"},
+                            "Sort direction for the task list UI.",
+                        ),
+                        query_param("status", {"type": "string"}, "Filter by task status."),
+                        query_param("priority", {"type": "string"}, "Filter by priority."),
+                        query_param("kind", {"type": "string"}, "Filter by task_kind."),
+                        query_param("agent", {"type": "string"}, "Filter by target principal, claim owner, or source agent text."),
+                        query_param("q", {"type": "string"}, "Text search over title, summary, next action, detail, and task id."),
+                        query_param("limit", {"type": "integer", "default": 100, "maximum": 500}, "Maximum rows to show."),
+                    ],
                     "responses": {"200": html_response},
                 }
             },
@@ -2129,7 +2299,49 @@ def render_swagger_docs() -> str:
 </html>"""
 
 
-def render_index(tasks: list[dict]) -> str:
+def render_index(tasks: list[dict], options: dict | None = None) -> str:
+    options = options or _task_index_options({})
+    raw_count = int(options.get("raw_count") or len(tasks))
+    filtered_count = int(options.get("filtered_count") or len(tasks))
+    sort_label = {
+        "title": "Title",
+        "status": "Status",
+        "priority": "Priority",
+        "rank": "Rank",
+        "due": "Due",
+        "created": "Created",
+        "updated": "Updated",
+    }.get(options.get("sort"), "Rank")
+    direction_label = "오름차순" if options.get("dir") == "asc" else "내림차순"
+    status_options = _select_options(
+        [
+            ("", "전체"),
+            ("inbox", "inbox"),
+            ("scheduled", "scheduled"),
+            ("in_progress", "in_progress"),
+            ("blocked", "blocked"),
+            ("completed", "completed"),
+            ("failed", "failed"),
+            ("cancelled", "cancelled"),
+            ("archived", "archived"),
+        ],
+        str(options.get("status") or ""),
+    )
+    priority_options = _select_options(
+        [("", "전체"), ("urgent", "urgent"), ("high", "high"), ("normal", "normal"), ("low", "low")],
+        str(options.get("priority") or ""),
+    )
+    kind_options = _select_options(
+        [
+            ("", "전체"),
+            ("action", "action"),
+            ("delegated_task", "delegated_task"),
+            ("automation", "automation"),
+            ("workflow_run", "workflow_run"),
+            ("review_gate", "review_gate"),
+        ],
+        str(options.get("kind") or ""),
+    )
     row_parts = []
     for index, task in enumerate(tasks):
         task_id = task["task_id"]
@@ -2176,13 +2388,45 @@ def render_index(tasks: list[dict]) -> str:
     <nav><a class="button" href="/control">Control</a> <a class="button primary" href="/quick-add">Quick Add</a> <a class="button" href="/docs">API Docs</a></nav>
   </header>
   <section class="summary-grid">
-    <div class="metric"><dt>Tasks</dt><dd>{len(tasks)}</dd></div>
+    <div class="metric"><dt>Tasks</dt><dd>{len(tasks)} / {filtered_count}</dd></div>
+    <div class="metric"><dt>Sort</dt><dd>{_esc(sort_label)} · {_esc(direction_label)}</dd></div>
     <div class="metric"><dt>Surface</dt><dd>CLI / API / MCP / Web</dd></div>
     <div class="metric"><dt>API</dt><dd><code>/v1/tasks</code></dd></div>
   </section>
+  <section class="panel task-filters" aria-label="작업 필터">
+    <form method="get" action="/" class="task-filter-form">
+      <input type="hidden" name="sort" value="{_esc(options.get('sort'))}">
+      <input type="hidden" name="dir" value="{_esc(options.get('dir'))}">
+      <div class="filter-grid">
+        <label>검색
+          <input name="q" value="{_esc(options.get('q'))}" placeholder="제목, 요약, 다음 행동, ID">
+        </label>
+        <label>Status
+          <select name="status">{status_options}</select>
+        </label>
+        <label>Priority
+          <select name="priority">{priority_options}</select>
+        </label>
+        <label>Kind
+          <select name="kind">{kind_options}</select>
+        </label>
+        <label>Agent / Target
+          <input name="agent" value="{_esc(options.get('agent'))}" placeholder="agent, principal, claim">
+        </label>
+        <label>Limit
+          <input name="limit" type="number" min="10" max="500" step="10" value="{_esc(options.get('limit'))}">
+        </label>
+      </div>
+      <div class="filter-actions">
+        <button class="primary" type="submit">필터 적용</button>
+        <a class="button" href="/">초기화</a>
+        <span class="subtle">전체 {raw_count}개 중 필터 결과 {filtered_count}개, 현재 {len(tasks)}개 표시</span>
+      </div>
+    </form>
+  </section>
   <div class="task-table-wrap"><table class="task-table">
-    <thead><tr><th aria-label="Expand"></th><th>Title</th><th>Status</th><th>Priority</th><th>Rank</th><th>Due</th><th>Created</th><th>Next Action</th></tr></thead>
-    <tbody>{rows or '<tr><td colspan="8">No tasks.</td></tr>'}</tbody>
+    <thead><tr><th aria-label="Expand"></th><th>{_sort_header('Title', 'title', options)}</th><th>{_sort_header('Status', 'status', options)}</th><th>{_sort_header('Priority', 'priority', options)}</th><th>{_sort_header('Rank', 'rank', options)}</th><th>{_sort_header('Due', 'due', options)}</th><th>{_sort_header('Created', 'created', options)}</th><th>Next Action</th></tr></thead>
+    <tbody>{rows or '<tr><td colspan="8" class="muted">조건에 맞는 작업이 없습니다.</td></tr>'}</tbody>
   </table></div>
   </main>
   <script src="{_esc(_static_asset_url('app.js'))}"></script>

@@ -1,6 +1,6 @@
 # Web UI Screen Guide
 
-Updated: 2026-05-04
+Updated: 2026-05-05
 
 ## Purpose
 
@@ -38,6 +38,19 @@ Domain access for a local machine is intentionally left as a later TODO. The cur
 The root screen is the fast scanning surface for the current hub task queue.
 
 Top summary cards show the current task count, active product surfaces, and the REST API entrypoint. These cards are orientation aids, not the runtime source of truth. The database remains the source of truth.
+
+목록 화면은 작업을 빠르게 훑고 우선순위를 잡는 화면이다. `Title`, `Status`, `Priority`, `Rank`, `Due`, `Created` 헤더는 클릭할 수 있으며, 같은 헤더를 다시 클릭하면 오름차순과 내림차순이 전환된다.
+
+정렬 기준:
+
+- `Priority` 오름차순은 `urgent -> high -> normal -> low` 순서다.
+- `Rank` 오름차순은 작은 값이 먼저 나온다. `rank`가 비어 있는 작업은 어느 방향이든 뒤쪽에 둔다.
+- `Due` 오름차순은 가장 이른 due 또는 snooze 시간이 먼저 나온다. due가 없는 작업은 뒤쪽에 둔다.
+- `Created` 오름차순은 오래된 작업이 먼저, 내림차순은 최근 생성 작업이 먼저 나온다.
+
+필터 영역은 현재 화면에서 필요한 작업만 좁혀 보기 위한 보조 제어다. 현재 지원하는 필터는 검색어, status, priority, task kind, agent/target 텍스트, 표시 개수다. 검색어는 title, summary, next action, detail, task id를 대상으로 한다. agent/target 필터는 target principal, claim owner, source agent, assigned-by principal 텍스트를 대상으로 한다.
+
+정렬과 필터는 URL query로 표현된다. 예를 들어 `/?sort=due&dir=asc&status=scheduled`는 예정 작업 중 due가 빠른 순서로 보는 화면이다. 이 URL은 북마크하거나 다른 작업자에게 전달할 수 있지만, 여전히 실제 source of truth는 URL이 아니라 DB다.
 
 The task table is the primary queue view:
 

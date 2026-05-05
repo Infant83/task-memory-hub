@@ -120,7 +120,7 @@
 <body>
   <header>
     <h1>Task Memory Hub 통합 매뉴얼</h1>
-    <p>생성 시각: 2026-05-05T07:03:08Z. 루트 문서, docs/*.md, 주요 구현 파일을 한글 중심 탐색 구조로 묶은 운영 매뉴얼입니다.</p>
+    <p>생성 시각: 2026-05-05T07:37:31Z. 루트 문서, docs/*.md, 주요 구현 파일을 한글 중심 탐색 구조로 묶은 운영 매뉴얼입니다.</p>
   </header>
   <div class="layout">
     <nav>
@@ -504,7 +504,7 @@
     <section class="doc-section overview" id="manual-overview">
       <div class="section-kicker">운영 요약</div>
       <h2>TMH 통합 매뉴얼 사용법</h2>
-      <p class="summary">이 HTML은 TMH의 운영 문서, 설계 문서, 검증 명령, 주요 구현 파일을 한 화면에서 탐색하기 위한 통합 매뉴얼이다. 생성 시각: 2026-05-05T07:03:08Z.</p>
+      <p class="summary">이 HTML은 TMH의 운영 문서, 설계 문서, 검증 명령, 주요 구현 파일을 한 화면에서 탐색하기 위한 통합 매뉴얼이다. 생성 시각: 2026-05-05T07:37:31Z.</p>
       <div class="callout-grid">
         <div>
           <h3>현재 제품 단계</h3>
@@ -5571,12 +5571,12 @@ rg -n --hidden --glob &#x27;!*.egg-info/**&#x27; --glob &#x27;!.git/**&#x27; --g
     <section class="doc-section" id="docs-web-ui-screen-guide-md">
       <div class="section-kicker">docs / docs/web-ui-screen-guide.md</div>
       <h2>Web UI 화면 설명서</h2>
-      <p class="summary">Updated: 2026-05-04</p>
+      <p class="summary">Updated: 2026-05-05</p>
       <p class="source-note">원문 제목: Web UI Screen Guide. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
       <div class="markdown-body">
         <h1 id="docs-web-ui-screen-guide-md-web-ui-screen-guide">Web UI Screen Guide</h1>
 
-<p>Updated: 2026-05-04</p>
+<p>Updated: 2026-05-05</p>
 
 <h2 id="docs-web-ui-screen-guide-md-purpose">Purpose</h2>
 
@@ -5618,6 +5618,21 @@ rg -n --hidden --glob &#x27;!*.egg-info/**&#x27; --glob &#x27;!.git/**&#x27; --g
 <p>The root screen is the fast scanning surface for the current hub task queue.</p>
 
 <p>Top summary cards show the current task count, active product surfaces, and the REST API entrypoint. These cards are orientation aids, not the runtime source of truth. The database remains the source of truth.</p>
+
+<p>목록 화면은 작업을 빠르게 훑고 우선순위를 잡는 화면이다. <code>Title</code>, <code>Status</code>, <code>Priority</code>, <code>Rank</code>, <code>Due</code>, <code>Created</code> 헤더는 클릭할 수 있으며, 같은 헤더를 다시 클릭하면 오름차순과 내림차순이 전환된다.</p>
+
+<p>정렬 기준:</p>
+
+<ul>
+<li><code>Priority</code> 오름차순은 <code>urgent -&gt; high -&gt; normal -&gt; low</code> 순서다.</li>
+<li><code>Rank</code> 오름차순은 작은 값이 먼저 나온다. <code>rank</code>가 비어 있는 작업은 어느 방향이든 뒤쪽에 둔다.</li>
+<li><code>Due</code> 오름차순은 가장 이른 due 또는 snooze 시간이 먼저 나온다. due가 없는 작업은 뒤쪽에 둔다.</li>
+<li><code>Created</code> 오름차순은 오래된 작업이 먼저, 내림차순은 최근 생성 작업이 먼저 나온다.</li>
+</ul>
+
+<p>필터 영역은 현재 화면에서 필요한 작업만 좁혀 보기 위한 보조 제어다. 현재 지원하는 필터는 검색어, status, priority, task kind, agent/target 텍스트, 표시 개수다. 검색어는 title, summary, next action, detail, task id를 대상으로 한다. agent/target 필터는 target principal, claim owner, source agent, assigned-by principal 텍스트를 대상으로 한다.</p>
+
+<p>정렬과 필터는 URL query로 표현된다. 예를 들어 <code>/?sort=due&amp;dir=asc&amp;status=scheduled</code>는 예정 작업 중 due가 빠른 순서로 보는 화면이다. 이 URL은 북마크하거나 다른 작업자에게 전달할 수 있지만, 여전히 실제 source of truth는 URL이 아니라 DB다.</p>
 
 <p>The task table is the primary queue view:</p>
 
@@ -9889,7 +9904,7 @@ if __name__ == &quot;__main__&quot;:
     <section class="doc-section source-section" id="task_memory_hub-api-py">
       <div class="section-kicker">구현 파일 / task_memory_hub/api.py</div>
       <h2>task_memory_hub/api.py</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 2465.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 2709.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
@@ -9897,7 +9912,7 @@ if __name__ == &quot;__main__&quot;:
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 import argparse
 import hmac
 import json
@@ -9952,6 +9967,9 @@ from .timeutil import iso_now
 
 ALLOWED_HOSTS = {&quot;127.0.0.1&quot;, &quot;localhost&quot;, &quot;::1&quot;}
 STATIC_DIR = Path(__file__).with_name(&quot;static&quot;)
+TASK_INDEX_SORT_KEYS = {&quot;title&quot;, &quot;status&quot;, &quot;priority&quot;, &quot;rank&quot;, &quot;due&quot;, &quot;created&quot;, &quot;updated&quot;}
+TASK_INDEX_DEFAULT_SORT = &quot;rank&quot;
+TASK_INDEX_PRIORITY_ORDER = {&quot;urgent&quot;: 0, &quot;high&quot;: 1, &quot;normal&quot;: 2, &quot;low&quot;: 3}
 
 
 def parse_json_body(handler: BaseHTTPRequestHandler) -&gt; dict:
@@ -10127,8 +10145,14 @@ def make_handler(db_path: Path | str | None = None, write_token: str | None = No
                         self._send_html(HTTPStatus.OK, render_registry_record(registry_kind, identifier, record))
                         return
                 if path == &quot;/&quot;:
-                    tasks = list_tasks(db_path=db_path, limit=100)
-                    self._send_html(HTTPStatus.OK, render_index(tasks))
+                    options = _task_index_options(query)
+                    all_tasks = list_tasks(db_path=db_path, limit=1000)
+                    filtered_tasks = _filter_index_tasks(all_tasks, options)
+                    sorted_tasks = _sort_index_tasks(filtered_tasks, options[&quot;sort&quot;], options[&quot;dir&quot;])
+                    options[&quot;raw_count&quot;] = len(all_tasks)
+                    options[&quot;filtered_count&quot;] = len(filtered_tasks)
+                    tasks = sorted_tasks[: options[&quot;limit&quot;]]
+                    self._send_html(HTTPStatus.OK, render_index(tasks, options))
                     return
                 if path == &quot;/control&quot;:
                     self._send_html(HTTPStatus.OK, render_control_plane(db_path))
@@ -10688,6 +10712,149 @@ def _short_id(value: object, chars: int = 7) -&gt; str:
         prefix, suffix = text.split(&quot;_&quot;, 1)
         return f&quot;{prefix}_{suffix[:chars]}&quot;
     return text[: chars + 4]
+
+
+def _query_text(query: dict[str, list[str]], key: str, default: str = &quot;&quot;) -&gt; str:
+    values = query.get(key)
+    if not values:
+        return default
+    return str(values[0] or default).strip()
+
+
+def _bounded_int(value: str, default: int, minimum: int, maximum: int) -&gt; int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return default
+    return max(minimum, min(maximum, parsed))
+
+
+def _task_index_options(query: dict[str, list[str]]) -&gt; dict:
+    sort = _query_text(query, &quot;sort&quot;, TASK_INDEX_DEFAULT_SORT).lower()
+    if sort not in TASK_INDEX_SORT_KEYS:
+        sort = TASK_INDEX_DEFAULT_SORT
+    direction = _query_text(query, &quot;dir&quot;, &quot;asc&quot;).lower()
+    if direction not in {&quot;asc&quot;, &quot;desc&quot;}:
+        direction = &quot;asc&quot;
+    return {
+        &quot;sort&quot;: sort,
+        &quot;dir&quot;: direction,
+        &quot;status&quot;: _query_text(query, &quot;status&quot;),
+        &quot;priority&quot;: _query_text(query, &quot;priority&quot;).lower(),
+        &quot;kind&quot;: _query_text(query, &quot;kind&quot;),
+        &quot;agent&quot;: _query_text(query, &quot;agent&quot;),
+        &quot;q&quot;: _query_text(query, &quot;q&quot;),
+        &quot;limit&quot;: _bounded_int(_query_text(query, &quot;limit&quot;, &quot;100&quot;), 100, 10, 500),
+        &quot;raw_count&quot;: 0,
+        &quot;filtered_count&quot;: 0,
+    }
+
+
+def _contains_text(needle: str, *values: object) -&gt; bool:
+    normalized = needle.casefold()
+    return any(normalized in str(value or &quot;&quot;).casefold() for value in values)
+
+
+def _filter_index_tasks(tasks: list[dict], options: dict) -&gt; list[dict]:
+    filtered = tasks
+    if options.get(&quot;status&quot;):
+        filtered = [task for task in filtered if task.get(&quot;status&quot;) == options[&quot;status&quot;]]
+    if options.get(&quot;priority&quot;):
+        filtered = [task for task in filtered if str(task.get(&quot;priority&quot;) or &quot;&quot;).lower() == options[&quot;priority&quot;]]
+    if options.get(&quot;kind&quot;):
+        filtered = [task for task in filtered if task.get(&quot;task_kind&quot;) == options[&quot;kind&quot;]]
+    if options.get(&quot;agent&quot;):
+        filtered = [
+            task
+            for task in filtered
+            if _contains_text(
+                options[&quot;agent&quot;],
+                task.get(&quot;target_principal_id&quot;),
+                task.get(&quot;agent_claim_owner&quot;),
+                task.get(&quot;source_agent&quot;),
+                task.get(&quot;assigned_by_principal_id&quot;),
+            )
+        ]
+    if options.get(&quot;q&quot;):
+        filtered = [
+            task
+            for task in filtered
+            if _contains_text(
+                options[&quot;q&quot;],
+                task.get(&quot;title&quot;),
+                task.get(&quot;summary&quot;),
+                task.get(&quot;next_action&quot;),
+                task.get(&quot;detail_md&quot;),
+                task.get(&quot;task_id&quot;),
+            )
+        ]
+    return filtered
+
+
+def _task_sort_missing(task: dict, sort_key: str) -&gt; bool:
+    if sort_key == &quot;due&quot;:
+        return not (task.get(&quot;snooze_until&quot;) or task.get(&quot;due_at&quot;))
+    if sort_key == &quot;rank&quot;:
+        return task.get(&quot;rank&quot;) in {None, &quot;&quot;}
+    if sort_key == &quot;created&quot;:
+        return not task.get(&quot;created_at&quot;)
+    if sort_key == &quot;updated&quot;:
+        return not task.get(&quot;updated_at&quot;)
+    return not task.get(sort_key)
+
+
+def _task_sort_value(task: dict, sort_key: str) -&gt; object:
+    if sort_key == &quot;priority&quot;:
+        return TASK_INDEX_PRIORITY_ORDER.get(str(task.get(&quot;priority&quot;) or &quot;&quot;).lower(), 99)
+    if sort_key == &quot;rank&quot;:
+        try:
+            return int(task.get(&quot;rank&quot;))
+        except (TypeError, ValueError):
+            return 999999
+    if sort_key == &quot;due&quot;:
+        return task.get(&quot;snooze_until&quot;) or task.get(&quot;due_at&quot;) or &quot;&quot;
+    if sort_key == &quot;created&quot;:
+        return task.get(&quot;created_at&quot;) or &quot;&quot;
+    if sort_key == &quot;updated&quot;:
+        return task.get(&quot;updated_at&quot;) or &quot;&quot;
+    return str(task.get(sort_key) or &quot;&quot;).casefold()
+
+
+def _sort_index_tasks(tasks: list[dict], sort_key: str, direction: str) -&gt; list[dict]:
+    present = [task for task in tasks if not _task_sort_missing(task, sort_key)]
+    missing = [task for task in tasks if _task_sort_missing(task, sort_key)]
+    present.sort(key=lambda task: _task_sort_value(task, sort_key), reverse=direction == &quot;desc&quot;)
+    return present + missing
+
+
+def _task_index_url(options: dict, **updates: object) -&gt; str:
+    params: dict[str, str] = {}
+    for key in [&quot;sort&quot;, &quot;dir&quot;, &quot;status&quot;, &quot;priority&quot;, &quot;kind&quot;, &quot;agent&quot;, &quot;q&quot;, &quot;limit&quot;]:
+        value = updates[key] if key in updates else options.get(key, &quot;&quot;)
+        if value not in {None, &quot;&quot;}:
+            params[key] = str(value)
+    return &quot;/&quot; + (f&quot;?{urlencode(params)}&quot; if params else &quot;&quot;)
+
+
+def _sort_header(label: str, sort_key: str, options: dict) -&gt; str:
+    active = options.get(&quot;sort&quot;) == sort_key
+    direction = options.get(&quot;dir&quot;, &quot;asc&quot;)
+    next_direction = &quot;desc&quot; if active and direction == &quot;asc&quot; else &quot;asc&quot;
+    marker = &quot; ↑&quot; if active and direction == &quot;asc&quot; else &quot; ↓&quot; if active else &quot;&quot;
+    classes = &quot;sort-link is-active&quot; if active else &quot;sort-link&quot;
+    aria_sort = &quot;ascending&quot; if active and direction == &quot;asc&quot; else &quot;descending&quot; if active else &quot;none&quot;
+    return (
+        f&#x27;&lt;a class=&quot;{classes}&quot; href=&quot;{_esc(_task_index_url(options, sort=sort_key, dir=next_direction))}&quot; &#x27;
+        f&#x27;aria-sort=&quot;{aria_sort}&quot; title=&quot;{_esc(label)} 정렬 토글&quot;&gt;{_esc(label)}{marker}&lt;/a&gt;&#x27;
+    )
+
+
+def _select_options(values: list[tuple[str, str]], selected: str) -&gt; str:
+    parts = []
+    for value, label in values:
+        selected_attr = &quot; selected&quot; if value == selected else &quot;&quot;
+        parts.append(f&#x27;&lt;option value=&quot;{_esc(value)}&quot;{selected_attr}&gt;{_esc(label)}&lt;/option&gt;&#x27;)
+    return &quot;\n&quot;.join(parts)
 
 
 def _lookup_principal(identifier: str | None, db_path: Path | str | None) -&gt; dict | None:
@@ -11259,7 +11426,25 @@ def build_openapi_spec() -&gt; dict:
             &quot;/&quot;: {
                 &quot;get&quot;: {
                     &quot;tags&quot;: [&quot;html&quot;],
-                    &quot;summary&quot;: &quot;Minimal task list UI&quot;,
+                    &quot;summary&quot;: &quot;Task list UI with sorting and filters&quot;,
+                    &quot;parameters&quot;: [
+                        query_param(
+                            &quot;sort&quot;,
+                            {&quot;type&quot;: &quot;string&quot;, &quot;enum&quot;: sorted(TASK_INDEX_SORT_KEYS), &quot;default&quot;: TASK_INDEX_DEFAULT_SORT},
+                            &quot;Sort column for the task list UI.&quot;,
+                        ),
+                        query_param(
+                            &quot;dir&quot;,
+                            {&quot;type&quot;: &quot;string&quot;, &quot;enum&quot;: [&quot;asc&quot;, &quot;desc&quot;], &quot;default&quot;: &quot;asc&quot;},
+                            &quot;Sort direction for the task list UI.&quot;,
+                        ),
+                        query_param(&quot;status&quot;, {&quot;type&quot;: &quot;string&quot;}, &quot;Filter by task status.&quot;),
+                        query_param(&quot;priority&quot;, {&quot;type&quot;: &quot;string&quot;}, &quot;Filter by priority.&quot;),
+                        query_param(&quot;kind&quot;, {&quot;type&quot;: &quot;string&quot;}, &quot;Filter by task_kind.&quot;),
+                        query_param(&quot;agent&quot;, {&quot;type&quot;: &quot;string&quot;}, &quot;Filter by target principal, claim owner, or source agent text.&quot;),
+                        query_param(&quot;q&quot;, {&quot;type&quot;: &quot;string&quot;}, &quot;Text search over title, summary, next action, detail, and task id.&quot;),
+                        query_param(&quot;limit&quot;, {&quot;type&quot;: &quot;integer&quot;, &quot;default&quot;: 100, &quot;maximum&quot;: 500}, &quot;Maximum rows to show.&quot;),
+                    ],
                     &quot;responses&quot;: {&quot;200&quot;: html_response},
                 }
             },
@@ -12023,7 +12208,49 @@ def render_swagger_docs() -&gt; str:
 &lt;/html&gt;&quot;&quot;&quot;
 
 
-def render_index(tasks: list[dict]) -&gt; str:
+def render_index(tasks: list[dict], options: dict | None = None) -&gt; str:
+    options = options or _task_index_options({})
+    raw_count = int(options.get(&quot;raw_count&quot;) or len(tasks))
+    filtered_count = int(options.get(&quot;filtered_count&quot;) or len(tasks))
+    sort_label = {
+        &quot;title&quot;: &quot;Title&quot;,
+        &quot;status&quot;: &quot;Status&quot;,
+        &quot;priority&quot;: &quot;Priority&quot;,
+        &quot;rank&quot;: &quot;Rank&quot;,
+        &quot;due&quot;: &quot;Due&quot;,
+        &quot;created&quot;: &quot;Created&quot;,
+        &quot;updated&quot;: &quot;Updated&quot;,
+    }.get(options.get(&quot;sort&quot;), &quot;Rank&quot;)
+    direction_label = &quot;오름차순&quot; if options.get(&quot;dir&quot;) == &quot;asc&quot; else &quot;내림차순&quot;
+    status_options = _select_options(
+        [
+            (&quot;&quot;, &quot;전체&quot;),
+            (&quot;inbox&quot;, &quot;inbox&quot;),
+            (&quot;scheduled&quot;, &quot;scheduled&quot;),
+            (&quot;in_progress&quot;, &quot;in_progress&quot;),
+            (&quot;blocked&quot;, &quot;blocked&quot;),
+            (&quot;completed&quot;, &quot;completed&quot;),
+            (&quot;failed&quot;, &quot;failed&quot;),
+            (&quot;cancelled&quot;, &quot;cancelled&quot;),
+            (&quot;archived&quot;, &quot;archived&quot;),
+        ],
+        str(options.get(&quot;status&quot;) or &quot;&quot;),
+    )
+    priority_options = _select_options(
+        [(&quot;&quot;, &quot;전체&quot;), (&quot;urgent&quot;, &quot;urgent&quot;), (&quot;high&quot;, &quot;high&quot;), (&quot;normal&quot;, &quot;normal&quot;), (&quot;low&quot;, &quot;low&quot;)],
+        str(options.get(&quot;priority&quot;) or &quot;&quot;),
+    )
+    kind_options = _select_options(
+        [
+            (&quot;&quot;, &quot;전체&quot;),
+            (&quot;action&quot;, &quot;action&quot;),
+            (&quot;delegated_task&quot;, &quot;delegated_task&quot;),
+            (&quot;automation&quot;, &quot;automation&quot;),
+            (&quot;workflow_run&quot;, &quot;workflow_run&quot;),
+            (&quot;review_gate&quot;, &quot;review_gate&quot;),
+        ],
+        str(options.get(&quot;kind&quot;) or &quot;&quot;),
+    )
     row_parts = []
     for index, task in enumerate(tasks):
         task_id = task[&quot;task_id&quot;]
@@ -12070,13 +12297,45 @@ def render_index(tasks: list[dict]) -&gt; str:
     &lt;nav&gt;&lt;a class=&quot;button&quot; href=&quot;/control&quot;&gt;Control&lt;/a&gt; &lt;a class=&quot;button primary&quot; href=&quot;/quick-add&quot;&gt;Quick Add&lt;/a&gt; &lt;a class=&quot;button&quot; href=&quot;/docs&quot;&gt;API Docs&lt;/a&gt;&lt;/nav&gt;
   &lt;/header&gt;
   &lt;section class=&quot;summary-grid&quot;&gt;
-    &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Tasks&lt;/dt&gt;&lt;dd&gt;{len(tasks)}&lt;/dd&gt;&lt;/div&gt;
+    &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Tasks&lt;/dt&gt;&lt;dd&gt;{len(tasks)} / {filtered_count}&lt;/dd&gt;&lt;/div&gt;
+    &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Sort&lt;/dt&gt;&lt;dd&gt;{_esc(sort_label)} · {_esc(direction_label)}&lt;/dd&gt;&lt;/div&gt;
     &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Surface&lt;/dt&gt;&lt;dd&gt;CLI / API / MCP / Web&lt;/dd&gt;&lt;/div&gt;
     &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;API&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;/v1/tasks&lt;/code&gt;&lt;/dd&gt;&lt;/div&gt;
   &lt;/section&gt;
+  &lt;section class=&quot;panel task-filters&quot; aria-label=&quot;작업 필터&quot;&gt;
+    &lt;form method=&quot;get&quot; action=&quot;/&quot; class=&quot;task-filter-form&quot;&gt;
+      &lt;input type=&quot;hidden&quot; name=&quot;sort&quot; value=&quot;{_esc(options.get(&#x27;sort&#x27;))}&quot;&gt;
+      &lt;input type=&quot;hidden&quot; name=&quot;dir&quot; value=&quot;{_esc(options.get(&#x27;dir&#x27;))}&quot;&gt;
+      &lt;div class=&quot;filter-grid&quot;&gt;
+        &lt;label&gt;검색
+          &lt;input name=&quot;q&quot; value=&quot;{_esc(options.get(&#x27;q&#x27;))}&quot; placeholder=&quot;제목, 요약, 다음 행동, ID&quot;&gt;
+        &lt;/label&gt;
+        &lt;label&gt;Status
+          &lt;select name=&quot;status&quot;&gt;{status_options}&lt;/select&gt;
+        &lt;/label&gt;
+        &lt;label&gt;Priority
+          &lt;select name=&quot;priority&quot;&gt;{priority_options}&lt;/select&gt;
+        &lt;/label&gt;
+        &lt;label&gt;Kind
+          &lt;select name=&quot;kind&quot;&gt;{kind_options}&lt;/select&gt;
+        &lt;/label&gt;
+        &lt;label&gt;Agent / Target
+          &lt;input name=&quot;agent&quot; value=&quot;{_esc(options.get(&#x27;agent&#x27;))}&quot; placeholder=&quot;agent, principal, claim&quot;&gt;
+        &lt;/label&gt;
+        &lt;label&gt;Limit
+          &lt;input name=&quot;limit&quot; type=&quot;number&quot; min=&quot;10&quot; max=&quot;500&quot; step=&quot;10&quot; value=&quot;{_esc(options.get(&#x27;limit&#x27;))}&quot;&gt;
+        &lt;/label&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;filter-actions&quot;&gt;
+        &lt;button class=&quot;primary&quot; type=&quot;submit&quot;&gt;필터 적용&lt;/button&gt;
+        &lt;a class=&quot;button&quot; href=&quot;/&quot;&gt;초기화&lt;/a&gt;
+        &lt;span class=&quot;subtle&quot;&gt;전체 {raw_count}개 중 필터 결과 {filtered_count}개, 현재 {len(tasks)}개 표시&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
   &lt;div class=&quot;task-table-wrap&quot;&gt;&lt;table class=&quot;task-table&quot;&gt;
-    &lt;thead&gt;&lt;tr&gt;&lt;th aria-label=&quot;Expand&quot;&gt;&lt;/th&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Priority&lt;/th&gt;&lt;th&gt;Rank&lt;/th&gt;&lt;th&gt;Due&lt;/th&gt;&lt;th&gt;Created&lt;/th&gt;&lt;th&gt;Next Action&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
-    &lt;tbody&gt;{rows or &#x27;&lt;tr&gt;&lt;td colspan=&quot;8&quot;&gt;No tasks.&lt;/td&gt;&lt;/tr&gt;&#x27;}&lt;/tbody&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th aria-label=&quot;Expand&quot;&gt;&lt;/th&gt;&lt;th&gt;{_sort_header(&#x27;Title&#x27;, &#x27;title&#x27;, options)}&lt;/th&gt;&lt;th&gt;{_sort_header(&#x27;Status&#x27;, &#x27;status&#x27;, options)}&lt;/th&gt;&lt;th&gt;{_sort_header(&#x27;Priority&#x27;, &#x27;priority&#x27;, options)}&lt;/th&gt;&lt;th&gt;{_sort_header(&#x27;Rank&#x27;, &#x27;rank&#x27;, options)}&lt;/th&gt;&lt;th&gt;{_sort_header(&#x27;Due&#x27;, &#x27;due&#x27;, options)}&lt;/th&gt;&lt;th&gt;{_sort_header(&#x27;Created&#x27;, &#x27;created&#x27;, options)}&lt;/th&gt;&lt;th&gt;Next Action&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;{rows or &#x27;&lt;tr&gt;&lt;td colspan=&quot;8&quot; class=&quot;muted&quot;&gt;조건에 맞는 작업이 없습니다.&lt;/td&gt;&lt;/tr&gt;&#x27;}&lt;/tbody&gt;
   &lt;/table&gt;&lt;/div&gt;
   &lt;/main&gt;
   &lt;script src=&quot;{_esc(_static_asset_url(&#x27;app.js&#x27;))}&quot;&gt;&lt;/script&gt;
@@ -16061,7 +16320,7 @@ document.addEventListener(&quot;click&quot;, (event) =&gt; {
     <section class="doc-section source-section" id="task_memory_hub-static-app-css">
       <div class="section-kicker">구현 파일 / task_memory_hub/static/app.css</div>
       <h2>task_memory_hub/static/app.css</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 508.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 549.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>:root {
@@ -16463,6 +16722,46 @@ label {
   min-width: 92px;
 }
 
+.sort-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sort-link:hover {
+  color: var(--accent);
+}
+
+.sort-link.is-active {
+  color: var(--accent);
+}
+
+.task-filters {
+  margin: 12px 0 0;
+}
+
+.task-filter-form {
+  display: grid;
+  gap: 12px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .task-main-row:hover td {
   background: #f9fafb;
 }
@@ -16563,6 +16862,7 @@ label {
 
   .layout,
   .control-grid,
+  .filter-grid,
   .row {
     grid-template-columns: 1fr;
   }
