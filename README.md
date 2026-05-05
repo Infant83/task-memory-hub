@@ -9,6 +9,7 @@ The current implementation is intentionally local-first. SQLite is the default r
 - `tmh` CLI for task create/list/update/ack/snooze/done/import/export.
 - `tmh add --json-file <file>` for script-friendly task creation.
 - Loopback REST API and Web UI through `tmh-web`.
+- Agentic control dashboard at `/control` for workspace, principal, harness, runtime, review-gate, and queue status.
 - Swagger UI at `/docs`, static reference at `/docs/reference`, and OpenAPI JSON at `/openapi.json`.
 - Local write token for POST/PATCH requests.
 - STDIO MCP server through `tmh-mcp`.
@@ -97,6 +98,7 @@ tmh-web --host 127.0.0.1 --port 8787
 Open:
 
 - `http://127.0.0.1:8787/`
+- `http://127.0.0.1:8787/control`
 - `http://127.0.0.1:8787/quick-add`
 - `http://127.0.0.1:8787/docs`
 - `http://127.0.0.1:8787/openapi.json`
@@ -171,6 +173,7 @@ Script execution uses `script_ref` allowlists. Task prose, `next_action`, `detai
 - `docs/public-progress.md`: public implementation summary.
 - `docs/public-release-plan.md`: public repository scope and cleanup plan.
 - `docs/manual.html`: generated integrated manual that combines docs and selected implementation snapshots.
+- `docs/newbie-hands-on-curriculum.md`: hands-on curriculum for new users.
 - `docs/verification-manual.md`: verification commands for CLI, API, MCP, Web UI, runner, worker, and public repo checks.
 - `docs/ci-necessity-review.md`: why the initial CI scope is intentionally small.
 - `docs/web-ui-design-application.md`: how the DESIGN.md approach maps to TMH.

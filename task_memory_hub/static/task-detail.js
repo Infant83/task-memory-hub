@@ -73,6 +73,7 @@ async function activateTargetAgent() {
       name: config.targetAgentName,
       role: "worker",
       status: "active",
+      current_task_id: config.taskId,
       capabilities: config.requiredCapabilities || [],
       lease_seconds: 600,
     });

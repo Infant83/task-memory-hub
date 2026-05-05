@@ -120,7 +120,7 @@
 <body>
   <header>
     <h1>Task Memory Hub 통합 매뉴얼</h1>
-    <p>생성 시각: 2026-05-04T14:16:02Z. 루트 문서, docs/*.md, 주요 구현 파일을 한글 중심 탐색 구조로 묶은 운영 매뉴얼입니다.</p>
+    <p>생성 시각: 2026-05-05T07:03:08Z. 루트 문서, docs/*.md, 주요 구현 파일을 한글 중심 탐색 구조로 묶은 운영 매뉴얼입니다.</p>
   </header>
   <div class="layout">
     <nav>
@@ -298,6 +298,22 @@
 <li><a href="#docs-implementation-sanity-check-md-다음-구현-결정">다음 구현 결정</a></li>
 </ul>
 </li>
+<li><a href="#docs-newbie-hands-on-curriculum-md">뉴비 Hands-on 튜토리얼 커리큘럼</a><span>docs/newbie-hands-on-curriculum.md</span>
+<ul>
+<li><a href="#docs-newbie-hands-on-curriculum-md-목적">목적</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-대상">대상</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-운영-원칙">운영 원칙</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-전체-구성">전체 구성</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-0-tmh가-해결하는-문제">모듈 0. TMH가 해결하는 문제</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-1-설치와-hub-station-시작">모듈 1. 설치와 Hub Station 시작</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-2-첫-작업-등록과-확인">모듈 2. 첫 작업 등록과 확인</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-3-json-markdown-task-교환">모듈 3. JSON/Markdown task 교환</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-4-registry-기초">모듈 4. Registry 기초</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-5-agentic-control-화면">모듈 5. Agentic Control 화면</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-6-승인과-review-gate">모듈 6. 승인과 Review Gate</a></li>
+<li><a href="#docs-newbie-hands-on-curriculum-md-모듈-7-runner-dry-run">모듈 7. Runner Dry-run</a></li>
+</ul>
+</li>
 <li><a href="#docs-postgres-slow-track-md">PostgreSQL 전환 준비</a><span>docs/postgres-slow-track.md</span>
 <ul>
 <li><a href="#docs-postgres-slow-track-md-1-현재-방침">1. 현재 방침</a></li>
@@ -418,6 +434,7 @@
 <li><a href="#docs-web-ui-screen-guide-md">Web UI 화면 설명서</a><span>docs/web-ui-screen-guide.md</span>
 <ul>
 <li><a href="#docs-web-ui-screen-guide-md-purpose">Purpose</a></li>
+<li><a href="#docs-web-ui-screen-guide-md-control-screen">Control Screen</a></li>
 <li><a href="#docs-web-ui-screen-guide-md-task-list-screen">Task List Screen</a></li>
 <li><a href="#docs-web-ui-screen-guide-md-priority-and-rank">Priority And Rank</a></li>
 <li><a href="#docs-web-ui-screen-guide-md-task-detail-screen">Task Detail Screen</a></li>
@@ -428,7 +445,6 @@
 <li><a href="#docs-web-ui-screen-guide-md-status-panel">Status Panel</a></li>
 <li><a href="#docs-web-ui-screen-guide-md-provenance">Provenance</a></li>
 <li><a href="#docs-web-ui-screen-guide-md-agent-and-harness">Agent And Harness</a></li>
-<li><a href="#docs-web-ui-screen-guide-md-hierarchy-contract-and-events">Hierarchy, Contract, And Events</a></li>
 </ul>
 </li>
 <li><a href="#docs-windows-install-standard-md">Windows 설치 표준</a><span>docs/windows-install-standard.md</span>
@@ -488,7 +504,7 @@
     <section class="doc-section overview" id="manual-overview">
       <div class="section-kicker">운영 요약</div>
       <h2>TMH 통합 매뉴얼 사용법</h2>
-      <p class="summary">이 HTML은 TMH의 운영 문서, 설계 문서, 검증 명령, 주요 구현 파일을 한 화면에서 탐색하기 위한 통합 매뉴얼이다. 생성 시각: 2026-05-04T14:16:02Z.</p>
+      <p class="summary">이 HTML은 TMH의 운영 문서, 설계 문서, 검증 명령, 주요 구현 파일을 한 화면에서 탐색하기 위한 통합 매뉴얼이다. 생성 시각: 2026-05-05T07:03:08Z.</p>
       <div class="callout-grid">
         <div>
           <h3>현재 제품 단계</h3>
@@ -528,6 +544,7 @@
 <li><code>tmh</code> CLI for task create/list/update/ack/snooze/done/import/export.</li>
 <li><code>tmh add --json-file &lt;file&gt;</code> for script-friendly task creation.</li>
 <li>Loopback REST API and Web UI through <code>tmh-web</code>.</li>
+<li>Agentic control dashboard at <code>/control</code> for workspace, principal, harness, runtime, review-gate, and queue status.</li>
 <li>Swagger UI at <code>/docs</code>, static reference at <code>/docs/reference</code>, and OpenAPI JSON at <code>/openapi.json</code>.</li>
 <li>Local write token for POST/PATCH requests.</li>
 <li>STDIO MCP server through <code>tmh-mcp</code>.</li>
@@ -608,6 +625,7 @@
 
 <ul>
 <li><code>http://127.0.0.1:8787/</code></li>
+<li><code>http://127.0.0.1:8787/control</code></li>
 <li><code>http://127.0.0.1:8787/quick-add</code></li>
 <li><code>http://127.0.0.1:8787/docs</code></li>
 <li><code>http://127.0.0.1:8787/openapi.json</code></li>
@@ -674,6 +692,7 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/tasks `
 <li><code>docs/public-progress.md</code>: public implementation summary.</li>
 <li><code>docs/public-release-plan.md</code>: public repository scope and cleanup plan.</li>
 <li><code>docs/manual.html</code>: generated integrated manual that combines docs and selected implementation snapshots.</li>
+<li><code>docs/newbie-hands-on-curriculum.md</code>: hands-on curriculum for new users.</li>
 <li><code>docs/verification-manual.md</code>: verification commands for CLI, API, MCP, Web UI, runner, worker, and public repo checks.</li>
 <li><code>docs/ci-necessity-review.md</code>: why the initial CI scope is intentionally small.</li>
 <li><code>docs/web-ui-design-application.md</code>: how the DESIGN.md approach maps to TMH.</li>
@@ -3709,6 +3728,324 @@ finalize(run_handle) -&gt; completion/failure summary</code></pre>
       </div>
     </section>
 
+    <section class="doc-section" id="docs-newbie-hands-on-curriculum-md">
+      <div class="section-kicker">docs / docs/newbie-hands-on-curriculum.md</div>
+      <h2>뉴비 Hands-on 튜토리얼 커리큘럼</h2>
+      <p class="summary">초보 사용자가 설치, 작업 등록, registry, control 화면, review gate, runner dry-run, global hub를 손으로 익히는 교육 흐름이다.</p>
+      <p class="source-note">원문 제목: TMH 뉴비 Hands-on 튜토리얼 커리큘럼. 아래 내용은 추적성을 위해 원문 구조를 보존합니다.</p>
+      <div class="markdown-body">
+        <h1 id="docs-newbie-hands-on-curriculum-md-tmh-뉴비-hands-on-튜토리얼-커리큘럼">TMH 뉴비 Hands-on 튜토리얼 커리큘럼</h1>
+
+<p>작성일: 2026-05-05</p>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-목적">목적</h2>
+
+<p>이 커리큘럼은 Task Memory Hub를 처음 접하는 사용자가 “로컬 TODO 앱”으로 시작해 “agentic workflow control plane”의 기본 개념까지 손으로 확인하도록 설계한다. 강의 목표는 많은 기능을 설명하는 것이 아니라, 작업이 어디에 저장되고, 누가 요청하고, 누가 승인하고, 어떤 agent/runtime이 처리하는지 눈으로 추적하게 만드는 것이다.</p>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-대상">대상</h2>
+
+<ul>
+<li>Windows 11에서 PowerShell을 사용할 수 있는 사용자</li>
+<li>Python package 설치와 로컬 웹 UI 실행이 낯설 수 있는 초보 사용자</li>
+<li>Cline, Codex, Deepagents 같은 agent 도구를 “TMH의 client/backend”로 이해하고 싶은 사용자</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-운영-원칙">운영 원칙</h2>
+
+<ul>
+<li>모든 실습은 로컬 SQLite DB를 기본으로 한다.</li>
+<li>실제 email, Teams, OpenProject, webhook 발송은 하지 않는다.</li>
+<li>외부 side effect는 review gate와 delivery dry-run까지만 실습한다.</li>
+<li>Cline VS Code 확장 실습은 선택 모듈로 둔다. provider auth와 MCP approval UX가 준비된 환경에서만 진행한다.</li>
+<li>PostgreSQL은 개념과 dry-run까지만 다루고 설치형 실습은 고급 과정으로 분리한다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-전체-구성">전체 구성</h2>
+
+<pre class="table-block"><code>| 모듈 | 제목 | 목표 | 예상 시간 |
+| --- | --- | --- | --- |
+| 0 | TMH가 해결하는 문제 | source of truth, todo everywhere, human-visible control 개념 이해 | 20분 |
+| 1 | 설치와 Hub Station 시작 | CLI, Web UI, tray/station, shortcut 확인 | 30분 |
+| 2 | 첫 작업 등록과 확인 | Web UI/CLI로 task 생성, 조회, 완료 | 30분 |
+| 3 | JSON/Markdown task 교환 | `tmh add --json-file`, import/export 이해 | 30분 |
+| 4 | Registry 기초 | workspace, principal, harness가 왜 필요한지 확인 | 40분 |
+| 5 | Agentic Control 화면 | runtime, queue, review gate, claim 상태 읽기 | 40분 |
+| 6 | 승인과 Review Gate | 사람이 승인/거절/변경요청을 남기는 흐름 실습 | 40분 |
+| 7 | Runner Dry-run | 실제 외부 실행 없이 runner event trail 확인 | 45분 |
+| 8 | Global Hub와 Origin 추적 | local workspace task를 global hub에 push하고 origin fetch | 45분 |
+| 9 | Cline MCP 파일럿 | VS Code Cline이 TMH MCP를 client로 쓰는 흐름 | 선택 60분 |
+| 10 | 운영 점검과 문제 해결 | tray, startup, port, API docs, logs, backup 개념 | 45분 |</code></pre>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-0-tmh가-해결하는-문제">모듈 0. TMH가 해결하는 문제</h2>
+
+<p>핵심 메시지:</p>
+
+<ul>
+<li>TMH는 chat history나 Markdown 파일이 아니라 DB를 runtime source of truth로 둔다.</li>
+<li>사람과 agent가 같은 task/event log를 본다.</li>
+<li>agent는 hidden authority가 아니라 등록된 principal/runtime/backend다.</li>
+<li>외부 write는 review gate와 정책을 통과해야 한다.</li>
+</ul>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh status
+tmh --global status</code></pre>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>local DB와 global hub DB의 차이를 설명할 수 있다.</li>
+<li><code>source workspace</code>, <code>target principal</code>, <code>harness</code>, <code>runtime</code>이라는 단어를 구분할 수 있다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-1-설치와-hub-station-시작">모듈 1. 설치와 Hub Station 시작</h2>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">powershell -ExecutionPolicy Bypass -File .\scripts\install-tmh.ps1 -RegisterHubStation -StartNow -DesktopShortcuts
+powershell -ExecutionPolicy Bypass -File .\scripts\status-tmh-hub-station.ps1</code></pre>
+
+<p>확인:</p>
+
+<ul>
+<li><code>tmh.exe</code>, <code>tmh-web.exe</code>, <code>tmh-worker.exe</code>, <code>tmh-mcp.exe</code>, <code>tmh-tray.exe</code>가 PATH에 있는지 확인한다.</li>
+<li><code>http://127.0.0.1:8787/</code> 접속을 확인한다.</li>
+<li>Start Menu의 <code>Task Memory Hub</code> shortcut을 확인한다.</li>
+</ul>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>Web UI, Quick Add, API Docs, Control 화면을 열 수 있다.</li>
+<li>tray/station은 task engine이 아니라 launcher/controller라는 점을 이해한다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-2-첫-작업-등록과-확인">모듈 2. 첫 작업 등록과 확인</h2>
+
+<p>CLI 실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh add &quot;튜토리얼 첫 작업 등록&quot; --next &quot;Web UI에서 작업 상세를 확인한다&quot; --priority normal
+tmh list</code></pre>
+
+<p>Web UI 실습:</p>
+
+<ul>
+<li><code>/quick-add</code>에서 작업을 추가한다.</li>
+<li>task list에서 펼침 버튼을 누른다.</li>
+<li>task 상세 화면에서 <code>Done</code>을 누른다.</li>
+</ul>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>task가 <code>created</code>, <code>updated</code>, <code>completed</code> 이벤트를 남긴다는 점을 확인한다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-3-json-markdown-task-교환">모듈 3. JSON/Markdown task 교환</h2>
+
+<p>JSON 파일 예시:</p>
+
+<pre class="code-block"><code class=" language-json">{
+  &quot;title&quot;: &quot;JSON 파일로 작업 추가&quot;,
+  &quot;next_action&quot;: &quot;import 결과를 Web UI에서 확인한다&quot;,
+  &quot;priority&quot;: &quot;high&quot;,
+  &quot;due_at&quot;: &quot;2026-05-06T09:00:00+09:00&quot;
+}</code></pre>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh add --json-file .\examples\my-task.json
+tmh export-json --output .\tmp\tasks.json
+tmh export-md --output .\tmp\tasks.md</code></pre>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>Markdown/JSON은 bridge이고 runtime source of truth는 DB라는 점을 설명할 수 있다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-4-registry-기초">모듈 4. Registry 기초</h2>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh workspace show
+tmh principal list
+tmh harness list
+tmh harness show runner-governance</code></pre>
+
+<p>개념:</p>
+
+<ul>
+<li>workspace는 작업이 시작된 폴더/프로젝트의 정체성이다.</li>
+<li>principal은 사람, agent, service 같은 행위 주체다.</li>
+<li>harness는 agent가 어떤 정책과 제한으로 행동할 수 있는지 나타낸다.</li>
+</ul>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>task에 붙은 <code>source</code>, <code>target</code>, <code>submitted by</code>, <code>approved by</code>, <code>harness</code>가 재현성 근거라는 점을 이해한다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-5-agentic-control-화면">모듈 5. Agentic Control 화면</h2>
+
+<p>실습:</p>
+
+<ul>
+<li><code>/control</code>을 연다.</li>
+<li><code>Live runtimes</code>, <code>Review gates</code>, <code>Approval-ready</code>, <code>Claimed/running</code>, <code>Missing harness refs</code>를 확인한다.</li>
+<li>task 상세 화면에서 <code>Runtime 등록</code>, <code>Runtime Heartbeat</code>, <code>작업 Claim</code>을 눌러 변화를 본다.</li>
+</ul>
+
+<p>중요한 해석:</p>
+
+<ul>
+<li><code>Runtime 등록</code>은 외부 Cline/Codex/Deepagents process를 실행한다는 뜻이 아니다.</li>
+<li>runtime은 DB에 등록된 liveness/lease 신호다.</li>
+<li>실제 실행은 runner 또는 MCP client가 별도로 수행한다.</li>
+</ul>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>“agent principal이 있다”와 “runtime이 live다”와 “task가 claim되었다”를 구분할 수 있다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-6-승인과-review-gate">모듈 6. 승인과 Review Gate</h2>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh add &quot;검토 승인 실습&quot; --target-agent codex --harness runner-governance --priority high</code></pre>
+
+<p>Web UI에서:</p>
+
+<ul>
+<li>상세 화면을 연다.</li>
+<li><code>Review Gate</code>를 누른다.</li>
+<li>생성된 review gate task를 열고 <code>승인</code>, <code>거절</code>, <code>변경요청</code> 중 하나를 누른다.</li>
+</ul>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>승인/거절은 숨은 상태가 아니라 durable event로 남아야 한다는 점을 확인한다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-7-runner-dry-run">모듈 7. Runner Dry-run</h2>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh runner once --backend dry_run --capability tmh-api --capability tmh-cli --capability repo-edit --json</code></pre>
+
+<p>확인할 이벤트:</p>
+
+<ul>
+<li><code>runner_started</code></li>
+<li><code>policy_decision</code></li>
+<li><code>backend_resolved</code></li>
+<li><code>backend_started</code></li>
+<li><code>reasoning_summary</code></li>
+<li><code>artifact_reported</code></li>
+<li><code>completed</code> 또는 <code>blocked</code></li>
+</ul>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>dry-run은 정책과 event trail을 검증하지만 실제 외부 side effect를 만들지 않는다는 점을 설명할 수 있다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-8-global-hub와-origin-추적">모듈 8. Global Hub와 Origin 추적</h2>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">tmh push --profile normal
+tmh --global list --target-principal codex
+tmh fetch-origin &lt;hub_task_id&gt;</code></pre>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>global hub task가 full context dump가 아니라 thin manifest일 수 있음을 이해한다.</li>
+<li><code>source_workspace_id</code>, <code>origin_task_id</code>, <code>hub_task_id</code>로 원본을 역추적할 수 있다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-9-cline-mcp-파일럿">모듈 9. Cline MCP 파일럿</h2>
+
+<p>사전 조건:</p>
+
+<ul>
+<li>VS Code Cline 확장 provider auth 완료</li>
+<li>사용자가 Cline MCP 설정 수정을 명시 승인</li>
+</ul>
+
+<p>검증 목표:</p>
+
+<ul>
+<li>Cline extension에서 <code>task-memory-hub</code> MCP server가 보인다.</li>
+<li>Cline이 TMH task를 생성하거나 조회한다.</li>
+<li>Cline이 진행 상황을 <code>progress</code>로 보고한다.</li>
+<li>완료 시 TMH에 <code>done</code> 또는 runner event가 남는다.</li>
+</ul>
+
+<p>기본 명령:</p>
+
+<pre class="code-block"><code class=" language-powershell">.\scripts\test-cline-mcp-pilot.ps1</code></pre>
+
+<p>주의:</p>
+
+<ul>
+<li>direct MCP smoke는 Cline extension end-to-end 검증이 아니다.</li>
+<li>Cline IDE process stop은 stable control API가 없으면 TMH가 hard kill로 간주하지 않는다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-모듈-10-운영-점검과-문제-해결">모듈 10. 운영 점검과 문제 해결</h2>
+
+<p>실습:</p>
+
+<pre class="code-block"><code class=" language-powershell">powershell -ExecutionPolicy Bypass -File .\scripts\status-tmh-hub-station.ps1
+Invoke-RestMethod http://127.0.0.1:8787/health/ready
+tmh backup --output .\.tmh\backups\tutorial.sqlite</code></pre>
+
+<p>점검 항목:</p>
+
+<ul>
+<li>Web UI가 안 뜨면 process, port, API health를 먼저 확인한다.</li>
+<li>tray icon이 없어도 API/worker가 살아 있을 수 있다.</li>
+<li>PostgreSQL은 현 단계 필수가 아니며, 전환 전에는 dry-run checklist를 먼저 통과해야 한다.</li>
+</ul>
+
+<p>완료 기준:</p>
+
+<ul>
+<li>사용자가 “켜기, 상태 확인, 중지, 백업, 문제 진단”의 기본 루틴을 수행할 수 있다.</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-튜토리얼-산출물">튜토리얼 산출물</h2>
+
+<p>튜토리얼 종료 시 학습자는 다음을 가지고 있어야 한다.</p>
+
+<ul>
+<li>로컬 TMH DB에 생성된 실습 task 세트</li>
+<li>Web UI에서 확인 가능한 review gate와 runner dry-run event trail</li>
+<li><code>/control</code> 화면에서 agent/runtime/queue 상태를 읽은 기록</li>
+<li>JSON task 파일과 export 결과</li>
+<li>Hub push와 origin fetch 결과</li>
+</ul>
+
+<h2 id="docs-newbie-hands-on-curriculum-md-강사용-체크리스트">강사용 체크리스트</h2>
+
+<ul>
+<li>실습 전 <code>tmh status</code>, <code>tmh --global status</code>, <code>/health/ready</code>를 확인한다.</li>
+<li>Cline extension 실습은 별도 환경 확인 후 진행한다.</li>
+<li>외부 발송 실습은 하지 않는다.</li>
+<li>초보자에게는 <code>Runtime 등록</code>과 “실제 agent process 실행”을 반드시 구분해서 설명한다.</li>
+<li>PostgreSQL은 소개만 하고 설치형 실습은 고급 과정으로 넘긴다.</li>
+</ul>
+      </div>
+    </section>
+
     <section class="doc-section" id="docs-postgres-slow-track-md">
       <div class="section-kicker">docs / docs/postgres-slow-track.md</div>
       <h2>PostgreSQL 전환 준비</h2>
@@ -5257,6 +5594,25 @@ rg -n --hidden --glob &#x27;!*.egg-info/**&#x27; --glob &#x27;!.git/**&#x27; --g
 
 <p>Domain access for a local machine is intentionally left as a later TODO. The current Web UI remains a loopback-first local control plane.</p>
 
+<h2 id="docs-web-ui-screen-guide-md-control-screen">Control Screen</h2>
+
+<p><code>/control</code>은 task 상세 화면보다 상위의 운영 대시보드다. 이 화면은 사람이 지금 TMH가 agentic workflow를 받을 준비가 되었는지 빠르게 확인하기 위한 화면이다.</p>
+
+<p>확인해야 하는 핵심 질문:</p>
+
+<ul>
+<li>등록된 workspace가 무엇이고 현재 hub가 어떤 workspace DB를 보고 있는가.</li>
+<li>human, agent, service principal이 등록되어 있는가.</li>
+<li>harness profile이 현재 workspace에서 해석 가능한가.</li>
+<li>active runtime이 있고 lease가 살아 있는가.</li>
+<li>승인 대기 review gate가 있는가.</li>
+<li>승인되었지만 아직 claim되지 않은 agentic task가 있는가.</li>
+<li>claim되었거나 실행 중인 task가 있는가.</li>
+<li>harness reference가 task에는 있으나 registry에서 해석되지 않는 missing reference가 있는가.</li>
+</ul>
+
+<p>이 화면은 외부 Cline, Codex, Deepagents process를 직접 실행했다는 뜻을 주지 않는다. <code>live runtime</code>은 DB에 등록된 heartbeat/lease 상태이고, 실제 backend 실행은 runner 또는 MCP client가 별도로 수행해야 한다.</p>
+
 <h2 id="docs-web-ui-screen-guide-md-task-list-screen">Task List Screen</h2>
 
 <p>The root screen is the fast scanning surface for the current hub task queue.</p>
@@ -5324,12 +5680,12 @@ rg -n --hidden --glob &#x27;!*.egg-info/**&#x27; --glob &#x27;!.git/**&#x27; --g
 | `중지요청` | Record a human stop request. Backend-specific stop semantics must be visible in events. |
 | `Snooze` | Defer the task until a later time. |
 | `Done` | Mark the task complete. |
-| `Agent Claim` | Assign/claim the task for a principal or runtime through the hub. |
-| `Agent 활성화` | Register or refresh an agent runtime record in the hub. This does not necessarily launch an external Cline, Codex, or Deepagents process. |
-| `Agent Heartbeat` | Refresh runtime liveness. |
-| `Runner Dry-run` | Run the policy-aware harness runner without side effects. |
+| `작업 Claim` | Assign/claim the task for a principal or runtime through the hub. |
+| `Runtime 등록` | Register or refresh an agent runtime record in the hub. This does not launch an external Cline, Codex, or Deepagents process. |
+| `Runtime Heartbeat` | Refresh runtime liveness and write a selected-task event when a current task is attached. |
+| `Dry-run 실행` | Run the policy-aware harness runner without side effects. |
 | `Review Gate` | Create or reuse a human review-gate child task. |
-| `Orchestrator Run` | Attempt one orchestrator pass that assigns eligible work to active capable agents. |</code></pre>
+| `Orchestrator 배정` | Attempt one orchestrator pass that assigns eligible work to active capable agents. |</code></pre>
 
 <h3 id="docs-web-ui-screen-guide-md-status-strip">Status Strip</h3>
 
@@ -5669,7 +6025,7 @@ testpaths = [&quot;tests&quot;]
     <section class="doc-section source-section" id="task_memory_hub-service-py">
       <div class="section-kicker">구현 파일 / task_memory_hub/service.py</div>
       <h2>task_memory_hub/service.py</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 1868.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 1871.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
@@ -5905,11 +6261,14 @@ def list_task_events(
         ).fetchall()
     events = rows_to_dicts(rows)
     for event in events:
-        payload = event.pop(&quot;payload_json&quot;, &quot;{}&quot;) or &quot;{}&quot;
-        try:
-            event[&quot;payload&quot;] = json.loads(payload)
-        except json.JSONDecodeError:
-            event[&quot;payload&quot;] = {&quot;raw&quot;: payload}
+        if &quot;payload_json&quot; in event:
+            payload = event.pop(&quot;payload_json&quot;, &quot;{}&quot;) or &quot;{}&quot;
+            try:
+                event[&quot;payload&quot;] = json.loads(payload)
+            except json.JSONDecodeError:
+                event[&quot;payload&quot;] = {&quot;raw&quot;: payload}
+        else:
+            event.setdefault(&quot;payload&quot;, {})
     return events
 
 
@@ -7546,7 +7905,7 @@ def list_notification_attempts(
     <section class="doc-section source-section" id="task_memory_hub-cli-py">
       <div class="section-kicker">구현 파일 / task_memory_hub/cli.py</div>
       <h2>task_memory_hub/cli.py</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 1968.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 1975.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
@@ -9438,6 +9797,13 @@ def main(argv: list[str] | None = None) -&gt; int:
                 print(f&quot;Local:  {result[&#x27;local_db&#x27;]}&quot;)
                 print(f&quot;Global: {result[&#x27;global_db&#x27;]}&quot;)
                 print(f&quot;Profile: {result[&#x27;snapshot_profile&#x27;]}&quot;)
+                mirrored = result.get(&quot;mirrored_registry&quot;) or {}
+                print(
+                    &quot;Registry: &quot;
+                    f&quot;{mirrored.get(&#x27;harness_profiles&#x27;, 0)} harness, &quot;
+                    f&quot;{mirrored.get(&#x27;policy_profiles&#x27;, 0)} policy, &quot;
+                    f&quot;{mirrored.get(&#x27;network_profiles&#x27;, 0)} network mirrored&quot;
+                )
             return 0
 
         if args.command == &quot;pull&quot;:
@@ -9523,7 +9889,7 @@ if __name__ == &quot;__main__&quot;:
     <section class="doc-section source-section" id="task_memory_hub-api-py">
       <div class="section-kicker">구현 파일 / task_memory_hub/api.py</div>
       <h2>task_memory_hub/api.py</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 2233.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 2465.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
@@ -9556,6 +9922,7 @@ from .registry import (
 )
 from .service import (
     ack_task,
+    append_task_event,
     append_progress,
     claim_task,
     claim_next_task,
@@ -9762,6 +10129,9 @@ def make_handler(db_path: Path | str | None = None, write_token: str | None = No
                 if path == &quot;/&quot;:
                     tasks = list_tasks(db_path=db_path, limit=100)
                     self._send_html(HTTPStatus.OK, render_index(tasks))
+                    return
+                if path == &quot;/control&quot;:
+                    self._send_html(HTTPStatus.OK, render_control_plane(db_path))
                     return
                 if path == &quot;/quick-add&quot;:
                     self._send_html(HTTPStatus.OK, render_quick_add(write_token or &quot;&quot;))
@@ -9981,36 +10351,67 @@ def make_handler(db_path: Path | str | None = None, write_token: str | None = No
                     return
                 if path == &quot;/v1/agents/register&quot;:
                     workspace = current_workspace(db_path=db_path)
+                    runtime = register_agent_runtime(
+                        agent_name=body.get(&quot;name&quot;) or body.get(&quot;agent_name&quot;, &quot;&quot;),
+                        workspace_id=workspace[&quot;workspace_id&quot;],
+                        role=body.get(&quot;role&quot;, &quot;worker&quot;),
+                        status=body.get(&quot;status&quot;, &quot;active&quot;),
+                        capabilities=body.get(&quot;capabilities&quot;) or [],
+                        default_harness_id=body.get(&quot;default_harness_id&quot;, &quot;&quot;),
+                        max_active_tasks=int(body.get(&quot;max_active_tasks&quot;, 1)),
+                        lease_seconds=int(body.get(&quot;lease_seconds&quot;, 600)),
+                        notes=body.get(&quot;notes&quot;, &quot;&quot;),
+                        db_path=db_path,
+                    )
+                    if body.get(&quot;current_task_id&quot;):
+                        append_task_event(
+                            body[&quot;current_task_id&quot;],
+                            &quot;agent_runtime_registered&quot;,
+                            body.get(&quot;name&quot;) or body.get(&quot;agent_name&quot;, &quot;web-ui&quot;),
+                            {
+                                &quot;agent_name&quot;: runtime.get(&quot;agent_name&quot;),
+                                &quot;principal_id&quot;: runtime.get(&quot;principal_id&quot;),
+                                &quot;role&quot;: runtime.get(&quot;role&quot;),
+                                &quot;status&quot;: runtime.get(&quot;status&quot;),
+                                &quot;lease_until&quot;: runtime.get(&quot;lease_until&quot;),
+                                &quot;capabilities&quot;: runtime.get(&quot;capabilities&quot;) or [],
+                            },
+                            db_path=db_path,
+                        )
                     self._send(
                         HTTPStatus.CREATED,
-                        register_agent_runtime(
-                            agent_name=body.get(&quot;name&quot;) or body.get(&quot;agent_name&quot;, &quot;&quot;),
-                            workspace_id=workspace[&quot;workspace_id&quot;],
-                            role=body.get(&quot;role&quot;, &quot;worker&quot;),
-                            status=body.get(&quot;status&quot;, &quot;active&quot;),
-                            capabilities=body.get(&quot;capabilities&quot;) or [],
-                            default_harness_id=body.get(&quot;default_harness_id&quot;, &quot;&quot;),
-                            max_active_tasks=int(body.get(&quot;max_active_tasks&quot;, 1)),
-                            lease_seconds=int(body.get(&quot;lease_seconds&quot;, 600)),
-                            notes=body.get(&quot;notes&quot;, &quot;&quot;),
-                            db_path=db_path,
-                        ),
+                        runtime,
                     )
                     return
                 if path == &quot;/v1/agents/heartbeat&quot;:
                     workspace = current_workspace(db_path=db_path)
+                    runtime = heartbeat_agent_runtime(
+                        agent_name=body.get(&quot;name&quot;) or body.get(&quot;agent_name&quot;, &quot;&quot;),
+                        principal_id=body.get(&quot;principal_id&quot;, &quot;&quot;),
+                        workspace_id=workspace[&quot;workspace_id&quot;],
+                        status=body.get(&quot;status&quot;, &quot;active&quot;),
+                        current_task_id=body.get(&quot;current_task_id&quot;, &quot;&quot;),
+                        lease_seconds=int(body.get(&quot;lease_seconds&quot;, 600)),
+                        notes=body.get(&quot;notes&quot;, &quot;&quot;),
+                        db_path=db_path,
+                    )
+                    if body.get(&quot;current_task_id&quot;):
+                        append_task_event(
+                            body[&quot;current_task_id&quot;],
+                            &quot;agent_runtime_heartbeat&quot;,
+                            body.get(&quot;name&quot;) or body.get(&quot;agent_name&quot;, &quot;web-ui&quot;),
+                            {
+                                &quot;agent_name&quot;: runtime.get(&quot;agent_name&quot;),
+                                &quot;principal_id&quot;: runtime.get(&quot;principal_id&quot;),
+                                &quot;status&quot;: runtime.get(&quot;status&quot;),
+                                &quot;current_task_id&quot;: runtime.get(&quot;current_task_id&quot;),
+                                &quot;lease_until&quot;: runtime.get(&quot;lease_until&quot;),
+                            },
+                            db_path=db_path,
+                        )
                     self._send(
                         HTTPStatus.OK,
-                        heartbeat_agent_runtime(
-                            agent_name=body.get(&quot;name&quot;) or body.get(&quot;agent_name&quot;, &quot;&quot;),
-                            principal_id=body.get(&quot;principal_id&quot;, &quot;&quot;),
-                            workspace_id=workspace[&quot;workspace_id&quot;],
-                            status=body.get(&quot;status&quot;, &quot;active&quot;),
-                            current_task_id=body.get(&quot;current_task_id&quot;, &quot;&quot;),
-                            lease_seconds=int(body.get(&quot;lease_seconds&quot;, 600)),
-                            notes=body.get(&quot;notes&quot;, &quot;&quot;),
-                            db_path=db_path,
-                        ),
+                        runtime,
                     )
                     return
                 if path == &quot;/v1/orchestrator/run-once&quot;:
@@ -10486,6 +10887,202 @@ def _event_rows(events: list[dict]) -&gt; str:
         &quot;&quot;&quot;
         for event in events
     )
+
+
+def _terminal_task(task: dict) -&gt; bool:
+    return task.get(&quot;status&quot;) in {&quot;completed&quot;, &quot;cancelled&quot;, &quot;archived&quot;}
+
+
+def _queue_task_rows(tasks: list[dict], empty: str, db_path: Path | str | None = None) -&gt; str:
+    if not tasks:
+        return f&#x27;&lt;tr&gt;&lt;td colspan=&quot;6&quot; class=&quot;muted&quot;&gt;{_esc(empty)}&lt;/td&gt;&lt;/tr&gt;&#x27;
+    rows = []
+    for task in tasks:
+        rows.append(
+            f&quot;&quot;&quot;
+            &lt;tr&gt;
+              &lt;td&gt;&lt;a href=&quot;/tasks/{_esc(task[&#x27;task_id&#x27;])}&quot;&gt;{_esc(task.get(&#x27;title&#x27;))}&lt;/a&gt;&lt;br&gt;{_task_id_ref(task[&#x27;task_id&#x27;])}&lt;/td&gt;
+              &lt;td&gt;{_esc(task.get(&#x27;status&#x27;))}&lt;/td&gt;
+              &lt;td&gt;{_esc(task.get(&#x27;priority&#x27;))} / {_esc(task.get(&#x27;rank&#x27;) or &#x27;-&#x27;)}&lt;/td&gt;
+              &lt;td&gt;{_esc(_short_datetime(task.get(&#x27;due_at&#x27;) or task.get(&#x27;snooze_until&#x27;) or &#x27;&#x27;))}&lt;/td&gt;
+              &lt;td&gt;{_principal_ref(_lookup_principal(task.get(&#x27;target_principal_id&#x27;), db_path), task.get(&#x27;target_principal_id&#x27;) or &#x27;&#x27;)}&lt;/td&gt;
+              &lt;td&gt;{_esc(task.get(&#x27;agent_claim_owner&#x27;) or &#x27;-&#x27;)}&lt;/td&gt;
+            &lt;/tr&gt;
+            &quot;&quot;&quot;
+        )
+    return &quot;\n&quot;.join(rows)
+
+
+def _runtime_rows(runtimes: list[dict], db_path: Path | str | None = None) -&gt; str:
+    if not runtimes:
+        return &#x27;&lt;tr&gt;&lt;td colspan=&quot;6&quot; class=&quot;muted&quot;&gt;등록된 runtime이 없습니다.&lt;/td&gt;&lt;/tr&gt;&#x27;
+    rows = []
+    for runtime in runtimes:
+        live = _runtime_live(runtime)
+        task_id = runtime.get(&quot;current_task_id&quot;) or &quot;&quot;
+        rows.append(
+            f&quot;&quot;&quot;
+            &lt;tr&gt;
+              &lt;td&gt;{_principal_ref(_lookup_principal(runtime.get(&#x27;principal_id&#x27;), db_path), runtime.get(&#x27;principal_id&#x27;) or &#x27;&#x27;)}&lt;/td&gt;
+              &lt;td&gt;{_esc(runtime.get(&#x27;agent_name&#x27;))}&lt;/td&gt;
+              &lt;td&gt;&lt;span class=&quot;pill {&#x27;ok&#x27; if live else &#x27;warning&#x27;}&quot;&gt;{_esc(&#x27;live&#x27; if live else &#x27;expired&#x27;)}&lt;/span&gt;&lt;/td&gt;
+              &lt;td&gt;{_esc(runtime.get(&#x27;role&#x27;))}&lt;/td&gt;
+              &lt;td&gt;{_task_id_ref(task_id)}&lt;/td&gt;
+              &lt;td class=&quot;mono&quot;&gt;{_esc(_short_datetime(runtime.get(&#x27;lease_until&#x27;)))}&lt;/td&gt;
+            &lt;/tr&gt;
+            &quot;&quot;&quot;
+        )
+    return &quot;\n&quot;.join(rows)
+
+
+def _registry_rows(records: list[dict], kind: str, empty: str) -&gt; str:
+    if not records:
+        return f&#x27;&lt;tr&gt;&lt;td colspan=&quot;5&quot; class=&quot;muted&quot;&gt;{_esc(empty)}&lt;/td&gt;&lt;/tr&gt;&#x27;
+    rows = []
+    for record in records:
+        if kind == &quot;workspaces&quot;:
+            ref = _workspace_ref(record, record.get(&quot;workspace_id&quot;, &quot;&quot;))
+            detail = record.get(&quot;canonical_path&quot;, &quot;&quot;)
+            state = record.get(&quot;approval_status&quot;) or record.get(&quot;registration_status&quot;) or &quot;&quot;
+            owner = record.get(&quot;registered_by_principal_id&quot;, &quot;&quot;)
+        elif kind == &quot;principals&quot;:
+            ref = _principal_ref(record, record.get(&quot;principal_id&quot;, &quot;&quot;))
+            detail = record.get(&quot;contact_ref&quot;, &quot;&quot;)
+            state = record.get(&quot;trust_level&quot;) or &quot;&quot;
+            owner = record.get(&quot;auth_method&quot;, &quot;&quot;)
+        else:
+            ref = _harness_ref(record, record.get(&quot;harness_id&quot;, &quot;&quot;))
+            detail = f&quot;agent={record.get(&#x27;default_agent_principal_id&#x27;, &#x27;&#x27;)}&quot;
+            state = &quot;enabled&quot; if record.get(&quot;enabled&quot;) else &quot;disabled&quot;
+            owner = record.get(&quot;policy_profile_id&quot;, &quot;&quot;)
+        rows.append(
+            f&quot;&quot;&quot;
+            &lt;tr&gt;
+              &lt;td&gt;{ref}&lt;/td&gt;
+              &lt;td&gt;{_esc(state)}&lt;/td&gt;
+              &lt;td class=&quot;path&quot;&gt;{_esc(detail)}&lt;/td&gt;
+              &lt;td class=&quot;mono&quot;&gt;{_esc(owner)}&lt;/td&gt;
+              &lt;td class=&quot;mono&quot;&gt;{_esc(_short_datetime(record.get(&#x27;updated_at&#x27;) or record.get(&#x27;created_at&#x27;)))}&lt;/td&gt;
+            &lt;/tr&gt;
+            &quot;&quot;&quot;
+        )
+    return &quot;\n&quot;.join(rows)
+
+
+def render_control_plane(db_path: Path | str | None = None) -&gt; str:
+    workspace = current_workspace(db_path=db_path)
+    tasks = list_tasks(db_path=db_path, limit=500)
+    principals = list_principals(db_path=db_path)
+    workspaces = list_workspaces(db_path=db_path)
+    harnesses = list_harness_profiles(db_path=db_path, workspace_id=workspace[&quot;workspace_id&quot;])
+    runtimes = list_agent_runtimes(db_path=db_path, workspace_id=workspace[&quot;workspace_id&quot;])
+    live_runtimes = [runtime for runtime in runtimes if _runtime_live(runtime)]
+    review_gates = [
+        task
+        for task in tasks
+        if task.get(&quot;task_kind&quot;) == &quot;review_gate&quot; and not _terminal_task(task)
+    ]
+    assigned_waiting = [
+        task
+        for task in tasks
+        if not _terminal_task(task)
+        and task.get(&quot;task_kind&quot;) != &quot;review_gate&quot;
+        and task.get(&quot;target_principal_id&quot;)
+        and not task.get(&quot;agent_claim_owner&quot;)
+    ]
+    claimed_or_running = [
+        task
+        for task in tasks
+        if not _terminal_task(task)
+        and (task.get(&quot;agent_claim_owner&quot;) or task.get(&quot;status&quot;) == &quot;in_progress&quot;)
+    ]
+    approval_ready = [
+        task
+        for task in assigned_waiting
+        if task.get(&quot;approved_by_principal_id&quot;) and task.get(&quot;execution_mode&quot;) in {&quot;agent_assisted&quot;, &quot;agent_autonomous&quot;}
+    ]
+    missing_harness_count = sum(1 for task in tasks if task.get(&quot;harness_id&quot;) and not _lookup_harness(task.get(&quot;harness_id&quot;), db_path, workspace[&quot;workspace_id&quot;]))
+    return f&quot;&quot;&quot;&lt;!doctype html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;Control - {_esc(APP_NAME)}&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;{_esc(_static_asset_url(&#x27;app.css&#x27;))}&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main class=&quot;shell&quot;&gt;
+    &lt;header class=&quot;doc-header&quot;&gt;
+      &lt;div&gt;
+        &lt;h1&gt;Agentic Control&lt;/h1&gt;
+        &lt;p class=&quot;subtle&quot;&gt;등록된 workspace, principal, harness, runtime, 승인 대기와 실행 대기 queue를 한 화면에서 확인합니다.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;nav&gt;&lt;a class=&quot;button&quot; href=&quot;/&quot;&gt;Tasks&lt;/a&gt; &lt;a class=&quot;button&quot; href=&quot;/quick-add&quot;&gt;Quick Add&lt;/a&gt; &lt;a class=&quot;button&quot; href=&quot;/docs&quot;&gt;API Docs&lt;/a&gt;&lt;/nav&gt;
+    &lt;/header&gt;
+    &lt;section class=&quot;summary-grid&quot;&gt;
+      &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Workspace&lt;/dt&gt;&lt;dd&gt;{_esc(workspace.get(&#x27;workspace_slug&#x27;))}&lt;/dd&gt;&lt;/div&gt;
+      &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Live runtimes&lt;/dt&gt;&lt;dd&gt;{len(live_runtimes)} / {len(runtimes)}&lt;/dd&gt;&lt;/div&gt;
+      &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Review gates&lt;/dt&gt;&lt;dd&gt;{len(review_gates)}&lt;/dd&gt;&lt;/div&gt;
+      &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Approval-ready&lt;/dt&gt;&lt;dd&gt;{len(approval_ready)}&lt;/dd&gt;&lt;/div&gt;
+      &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Claimed/running&lt;/dt&gt;&lt;dd&gt;{len(claimed_or_running)}&lt;/dd&gt;&lt;/div&gt;
+      &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Missing harness refs&lt;/dt&gt;&lt;dd&gt;{missing_harness_count}&lt;/dd&gt;&lt;/div&gt;
+    &lt;/section&gt;
+    &lt;section class=&quot;control-grid&quot;&gt;
+      &lt;div class=&quot;panel&quot;&gt;
+        &lt;h2&gt;Runtime 상태&lt;/h2&gt;
+        &lt;div class=&quot;doc-table-wrap&quot;&gt;&lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Principal&lt;/th&gt;&lt;th&gt;Agent&lt;/th&gt;&lt;th&gt;Live&lt;/th&gt;&lt;th&gt;Role&lt;/th&gt;&lt;th&gt;Current task&lt;/th&gt;&lt;th&gt;Lease until&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;{_runtime_rows(runtimes, db_path)}&lt;/tbody&gt;
+        &lt;/table&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel&quot;&gt;
+        &lt;h2&gt;승인 대기 Review Gate&lt;/h2&gt;
+        &lt;div class=&quot;doc-table-wrap&quot;&gt;&lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Task&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Priority&lt;/th&gt;&lt;th&gt;Due&lt;/th&gt;&lt;th&gt;Target&lt;/th&gt;&lt;th&gt;Claim&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;{_queue_task_rows(review_gates, &#x27;승인 대기 review gate가 없습니다.&#x27;, db_path)}&lt;/tbody&gt;
+        &lt;/table&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel&quot;&gt;
+        &lt;h2&gt;배정/대기 Queue&lt;/h2&gt;
+        &lt;div class=&quot;doc-table-wrap&quot;&gt;&lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Task&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Priority&lt;/th&gt;&lt;th&gt;Due&lt;/th&gt;&lt;th&gt;Target&lt;/th&gt;&lt;th&gt;Claim&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;{_queue_task_rows(assigned_waiting, &#x27;target agent에 배정된 대기 작업이 없습니다.&#x27;, db_path)}&lt;/tbody&gt;
+        &lt;/table&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel&quot;&gt;
+        &lt;h2&gt;Claim / 실행 중&lt;/h2&gt;
+        &lt;div class=&quot;doc-table-wrap&quot;&gt;&lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Task&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Priority&lt;/th&gt;&lt;th&gt;Due&lt;/th&gt;&lt;th&gt;Target&lt;/th&gt;&lt;th&gt;Claim&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;{_queue_task_rows(claimed_or_running, &#x27;claim 또는 실행 중인 작업이 없습니다.&#x27;, db_path)}&lt;/tbody&gt;
+        &lt;/table&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+    &lt;section class=&quot;control-grid&quot;&gt;
+      &lt;div class=&quot;panel&quot;&gt;
+        &lt;h2&gt;Workspaces&lt;/h2&gt;
+        &lt;div class=&quot;doc-table-wrap&quot;&gt;&lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Workspace&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Path&lt;/th&gt;&lt;th&gt;Authority&lt;/th&gt;&lt;th&gt;Updated&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;{_registry_rows(workspaces, &#x27;workspaces&#x27;, &#x27;등록된 workspace가 없습니다.&#x27;)}&lt;/tbody&gt;
+        &lt;/table&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel&quot;&gt;
+        &lt;h2&gt;Principals&lt;/h2&gt;
+        &lt;div class=&quot;doc-table-wrap&quot;&gt;&lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Principal&lt;/th&gt;&lt;th&gt;Trust&lt;/th&gt;&lt;th&gt;Contact&lt;/th&gt;&lt;th&gt;Auth&lt;/th&gt;&lt;th&gt;Updated&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;{_registry_rows(principals, &#x27;principals&#x27;, &#x27;등록된 principal이 없습니다.&#x27;)}&lt;/tbody&gt;
+        &lt;/table&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;panel full-span&quot;&gt;
+        &lt;h2&gt;Harness Profiles&lt;/h2&gt;
+        &lt;div class=&quot;doc-table-wrap&quot;&gt;&lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Harness&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Default agent&lt;/th&gt;&lt;th&gt;Policy&lt;/th&gt;&lt;th&gt;Updated&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;{_registry_rows(harnesses, &#x27;harnesses&#x27;, &#x27;현재 workspace에 등록된 harness가 없습니다.&#x27;)}&lt;/tbody&gt;
+        &lt;/table&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;&quot;&quot;&quot;
 
 
 def render_registry_record(kind: str, identifier: str, record: dict) -&gt; str:
@@ -11215,6 +11812,7 @@ def build_openapi_spec() -&gt; dict:
                         &quot;capabilities&quot;: {&quot;type&quot;: &quot;array&quot;, &quot;items&quot;: {&quot;type&quot;: &quot;string&quot;}},
                         &quot;default_harness_id&quot;: {&quot;type&quot;: &quot;string&quot;},
                         &quot;max_active_tasks&quot;: {&quot;type&quot;: &quot;integer&quot;, &quot;default&quot;: 1},
+                        &quot;current_task_id&quot;: {&quot;type&quot;: &quot;string&quot;},
                         &quot;lease_seconds&quot;: {&quot;type&quot;: &quot;integer&quot;, &quot;default&quot;: 600},
                         &quot;notes&quot;: {&quot;type&quot;: &quot;string&quot;},
                     },
@@ -11469,7 +12067,7 @@ def render_index(tasks: list[dict]) -&gt; str:
   &lt;main class=&quot;shell&quot;&gt;
   &lt;header class=&quot;doc-header&quot;&gt;
     &lt;h1&gt;{_esc(APP_NAME)}&lt;/h1&gt;
-    &lt;nav&gt;&lt;a class=&quot;button primary&quot; href=&quot;/quick-add&quot;&gt;Quick Add&lt;/a&gt; &lt;a class=&quot;button&quot; href=&quot;/docs&quot;&gt;API Docs&lt;/a&gt;&lt;/nav&gt;
+    &lt;nav&gt;&lt;a class=&quot;button&quot; href=&quot;/control&quot;&gt;Control&lt;/a&gt; &lt;a class=&quot;button primary&quot; href=&quot;/quick-add&quot;&gt;Quick Add&lt;/a&gt; &lt;a class=&quot;button&quot; href=&quot;/docs&quot;&gt;API Docs&lt;/a&gt;&lt;/nav&gt;
   &lt;/header&gt;
   &lt;section class=&quot;summary-grid&quot;&gt;
     &lt;div class=&quot;metric&quot;&gt;&lt;dt&gt;Tasks&lt;/dt&gt;&lt;dd&gt;{len(tasks)}&lt;/dd&gt;&lt;/div&gt;
@@ -11497,7 +12095,7 @@ def render_quick_add(write_token: str = &quot;&quot;) -&gt; str:
 &lt;/head&gt;
 &lt;body&gt;
   &lt;main class=&quot;shell narrow&quot;&gt;
-  &lt;nav class=&quot;topbar&quot;&gt;&lt;a href=&quot;/&quot;&gt;Back to tasks&lt;/a&gt;&lt;span&gt;Quick Add&lt;/span&gt;&lt;/nav&gt;
+  &lt;nav class=&quot;topbar&quot;&gt;&lt;a href=&quot;/&quot;&gt;Back to tasks&lt;/a&gt;&lt;span&gt;&lt;a href=&quot;/control&quot;&gt;Control&lt;/a&gt; · Quick Add&lt;/span&gt;&lt;/nav&gt;
   &lt;header class=&quot;doc-header&quot;&gt;
     &lt;h1&gt;Quick Add&lt;/h1&gt;
     &lt;p class=&quot;subtle&quot;&gt;사람이 바로 등록하는 작업은 owner principal과 현재 workspace에 기본 바인딩된다.&lt;/p&gt;
@@ -11569,7 +12167,7 @@ def render_task(task: dict, detail: dict, write_token: str = &quot;&quot;) -&gt;
         target_principal_id or claim_owner
     )
     claim_button = (
-        &#x27;&lt;button class=&quot;primary&quot; data-ui-action=&quot;claim&quot;&gt;Agent Claim&lt;/button&gt;&#x27;
+        &#x27;&lt;button class=&quot;primary&quot; data-ui-action=&quot;claim&quot;&gt;작업 Claim&lt;/button&gt;&#x27;
         if can_claim
         else &quot;&quot;
     )
@@ -11577,14 +12175,14 @@ def render_task(task: dict, detail: dict, write_token: str = &quot;&quot;) -&gt;
         &#x27;&lt;button data-ui-action=&quot;release&quot;&gt;진행 중지&lt;/button&gt;&#x27; if task.get(&quot;status&quot;) == &quot;in_progress&quot; else &quot;&quot;
     )
     activate_button = (
-        &#x27;&lt;button data-ui-action=&quot;activate-agent&quot;&gt;Agent 활성화&lt;/button&gt;&#x27;
+        &#x27;&lt;button data-ui-action=&quot;activate-agent&quot;&gt;Runtime 등록&lt;/button&gt;&#x27;
         if detail.get(&quot;agent_activation_possible&quot;)
         else &quot;&quot;
     )
     heartbeat_button = (
-        &#x27;&lt;button data-ui-action=&quot;heartbeat-agent&quot;&gt;Agent Heartbeat&lt;/button&gt;&#x27; if target_principal_id or runtime else &quot;&quot;
+        &#x27;&lt;button data-ui-action=&quot;heartbeat-agent&quot;&gt;Runtime Heartbeat&lt;/button&gt;&#x27; if target_principal_id or runtime else &quot;&quot;
     )
-    runner_button = &#x27;&lt;button class=&quot;primary&quot; data-ui-action=&quot;runner-dry-run&quot;&gt;Runner Dry-run&lt;/button&gt;&#x27;
+    runner_button = &#x27;&lt;button class=&quot;primary&quot; data-ui-action=&quot;runner-dry-run&quot;&gt;Dry-run 실행&lt;/button&gt;&#x27;
     status_fields = [
         (&quot;Status&quot;, task.get(&quot;status&quot;), &quot;mono&quot;),
         (&quot;Priority / Rank&quot;, f&quot;{task.get(&#x27;priority&#x27;, &#x27;&#x27;)} / {task.get(&#x27;rank&#x27;) or &#x27;-&#x27;}&quot;, &quot;mono&quot;),
@@ -11660,7 +12258,7 @@ def render_task(task: dict, detail: dict, write_token: str = &quot;&quot;) -&gt;
 &lt;body&gt;
   &lt;main class=&quot;shell&quot;&gt;
     &lt;nav class=&quot;topbar&quot;&gt;
-      &lt;span&gt;&lt;a href=&quot;/&quot;&gt;Tasks&lt;/a&gt; · &lt;a href=&quot;/quick-add&quot;&gt;Quick Add&lt;/a&gt; · &lt;a href=&quot;/docs&quot;&gt;API Docs&lt;/a&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;a href=&quot;/&quot;&gt;Tasks&lt;/a&gt; · &lt;a href=&quot;/control&quot;&gt;Control&lt;/a&gt; · &lt;a href=&quot;/quick-add&quot;&gt;Quick Add&lt;/a&gt; · &lt;a href=&quot;/docs&quot;&gt;API Docs&lt;/a&gt;&lt;/span&gt;
       &lt;span&gt;{_task_id_ref(task[&#x27;task_id&#x27;])}&lt;/span&gt;
     &lt;/nav&gt;
     &lt;section class=&quot;heading&quot;&gt;
@@ -11685,7 +12283,7 @@ def render_task(task: dict, detail: dict, write_token: str = &quot;&quot;) -&gt;
       {runner_button}
       &lt;button data-ui-action=&quot;request-review-gate&quot;&gt;Review Gate&lt;/button&gt;
       &lt;button data-ui-action=&quot;delivery-dry-run&quot;&gt;Delivery Dry-run&lt;/button&gt;
-      &lt;button data-ui-action=&quot;orchestrator-run&quot;&gt;Orchestrator Run&lt;/button&gt;
+      &lt;button data-ui-action=&quot;orchestrator-run&quot;&gt;Orchestrator 배정&lt;/button&gt;
       &lt;span id=&quot;result&quot; class=&quot;result&quot; aria-live=&quot;polite&quot;&gt;&lt;/span&gt;
     &lt;/section&gt;
     &lt;dl class=&quot;status-strip&quot;&gt;
@@ -15254,7 +15852,7 @@ document.addEventListener(&quot;keydown&quot;, (event) =&gt; {
     <section class="doc-section source-section" id="task_memory_hub-static-task-detail-js">
       <div class="section-kicker">구현 파일 / task_memory_hub/static/task-detail.js</div>
       <h2>task_memory_hub/static/task-detail.js</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 199.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 200.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>const configElement = document.getElementById(&quot;tmh-task-config&quot;);
@@ -15332,6 +15930,7 @@ async function activateTargetAgent() {
       name: config.targetAgentName,
       role: &quot;worker&quot;,
       status: &quot;active&quot;,
+      current_task_id: config.taskId,
       capabilities: config.requiredCapabilities || [],
       lease_seconds: 600,
     });
@@ -15462,7 +16061,7 @@ document.addEventListener(&quot;click&quot;, (event) =&gt; {
     <section class="doc-section source-section" id="task_memory_hub-static-app-css">
       <div class="section-kicker">구현 파일 / task_memory_hub/static/app.css</div>
       <h2>task_memory_hub/static/app.css</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 495.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 508.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>:root {
@@ -15752,6 +16351,18 @@ label {
   margin: 16px 0;
 }
 
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 14px 0;
+  align-items: start;
+}
+
+.full-span {
+  grid-column: 1 / -1;
+}
+
 .metric {
   padding: 10px 12px;
 }
@@ -15951,6 +16562,7 @@ label {
   }
 
   .layout,
+  .control-grid,
   .row {
     grid-template-columns: 1fr;
   }
@@ -16312,7 +16924,7 @@ if __name__ == &quot;__main__&quot;:
     <section class="doc-section source-section" id="scripts-build-docs-manual-py">
       <div class="section-kicker">구현 파일 / scripts/build-docs-manual.py</div>
       <h2>scripts/build-docs-manual.py</h2>
-      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 461.</p>
+      <p class="summary">구현 추적을 위해 선택한 파일 내용을 접어둘 수 있는 스냅샷으로 포함했다. 줄 수: 463.</p>
       <details>
         <summary>구현 파일 내용 열기</summary>
         <pre class="code-block"><code>from __future__ import annotations
@@ -16338,6 +16950,7 @@ KOREAN_TITLES = {
     &quot;docs/external-adapter-plan.md&quot;: &quot;외부 연동 어댑터 계획&quot;,
     &quot;docs/functionality-drift-audit.md&quot;: &quot;기능 검증과 드리프트 감사&quot;,
     &quot;docs/harness-runner-governance-development-spec.md&quot;: &quot;하니스 러너 거버넌스 개발 명세&quot;,
+    &quot;docs/newbie-hands-on-curriculum.md&quot;: &quot;뉴비 Hands-on 튜토리얼 커리큘럼&quot;,
     &quot;docs/postgres-slow-track.md&quot;: &quot;PostgreSQL 전환 준비&quot;,
     &quot;docs/public-progress.md&quot;: &quot;공개 진행 요약&quot;,
     &quot;docs/review-gate-flow.md&quot;: &quot;Review Gate와 전달 드라이런&quot;,
@@ -16355,6 +16968,7 @@ KOREAN_SUMMARIES = {
     &quot;task-memory-hub-설계명세.md&quot;: &quot;Windows 로컬 우선 task/alarm/agent hub의 원래 설계 의도와 핵심 요구사항을 담고 있다.&quot;,
     &quot;docs/external-adapter-plan.md&quot;: &quot;OpenProject, Outlook 이메일, Teams, Webhook 연동을 어떤 순서와 안전장치로 붙일지 정리한다.&quot;,
     &quot;docs/functionality-drift-audit.md&quot;: &quot;현재 구현을 기능 스모크 결과와 원 설계 의도에 맞춰 비교하고, 유지/발전/되돌림 판단을 기록한다.&quot;,
+    &quot;docs/newbie-hands-on-curriculum.md&quot;: &quot;초보 사용자가 설치, 작업 등록, registry, control 화면, review gate, runner dry-run, global hub를 손으로 익히는 교육 흐름이다.&quot;,
 }
 
 LOCAL_ONLY_DOCS = {

@@ -1887,6 +1887,13 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Local:  {result['local_db']}")
                 print(f"Global: {result['global_db']}")
                 print(f"Profile: {result['snapshot_profile']}")
+                mirrored = result.get("mirrored_registry") or {}
+                print(
+                    "Registry: "
+                    f"{mirrored.get('harness_profiles', 0)} harness, "
+                    f"{mirrored.get('policy_profiles', 0)} policy, "
+                    f"{mirrored.get('network_profiles', 0)} network mirrored"
+                )
             return 0
 
         if args.command == "pull":

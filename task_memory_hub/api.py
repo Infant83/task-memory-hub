@@ -28,6 +28,7 @@ from .registry import (
 )
 from .service import (
     ack_task,
+    append_task_event,
     append_progress,
     claim_task,
     claim_next_task,
@@ -234,6 +235,9 @@ def make_handler(db_path: Path | str | None = None, write_token: str | None = No
                 if path == "/":
                     tasks = list_tasks(db_path=db_path, limit=100)
                     self._send_html(HTTPStatus.OK, render_index(tasks))
+                    return
+                if path == "/control":
+                    self._send_html(HTTPStatus.OK, render_control_plane(db_path))
                     return
                 if path == "/quick-add":
                     self._send_html(HTTPStatus.OK, render_quick_add(write_token or ""))
@@ -453,36 +457,67 @@ def make_handler(db_path: Path | str | None = None, write_token: str | None = No
                     return
                 if path == "/v1/agents/register":
                     workspace = current_workspace(db_path=db_path)
+                    runtime = register_agent_runtime(
+                        agent_name=body.get("name") or body.get("agent_name", ""),
+                        workspace_id=workspace["workspace_id"],
+                        role=body.get("role", "worker"),
+                        status=body.get("status", "active"),
+                        capabilities=body.get("capabilities") or [],
+                        default_harness_id=body.get("default_harness_id", ""),
+                        max_active_tasks=int(body.get("max_active_tasks", 1)),
+                        lease_seconds=int(body.get("lease_seconds", 600)),
+                        notes=body.get("notes", ""),
+                        db_path=db_path,
+                    )
+                    if body.get("current_task_id"):
+                        append_task_event(
+                            body["current_task_id"],
+                            "agent_runtime_registered",
+                            body.get("name") or body.get("agent_name", "web-ui"),
+                            {
+                                "agent_name": runtime.get("agent_name"),
+                                "principal_id": runtime.get("principal_id"),
+                                "role": runtime.get("role"),
+                                "status": runtime.get("status"),
+                                "lease_until": runtime.get("lease_until"),
+                                "capabilities": runtime.get("capabilities") or [],
+                            },
+                            db_path=db_path,
+                        )
                     self._send(
                         HTTPStatus.CREATED,
-                        register_agent_runtime(
-                            agent_name=body.get("name") or body.get("agent_name", ""),
-                            workspace_id=workspace["workspace_id"],
-                            role=body.get("role", "worker"),
-                            status=body.get("status", "active"),
-                            capabilities=body.get("capabilities") or [],
-                            default_harness_id=body.get("default_harness_id", ""),
-                            max_active_tasks=int(body.get("max_active_tasks", 1)),
-                            lease_seconds=int(body.get("lease_seconds", 600)),
-                            notes=body.get("notes", ""),
-                            db_path=db_path,
-                        ),
+                        runtime,
                     )
                     return
                 if path == "/v1/agents/heartbeat":
                     workspace = current_workspace(db_path=db_path)
+                    runtime = heartbeat_agent_runtime(
+                        agent_name=body.get("name") or body.get("agent_name", ""),
+                        principal_id=body.get("principal_id", ""),
+                        workspace_id=workspace["workspace_id"],
+                        status=body.get("status", "active"),
+                        current_task_id=body.get("current_task_id", ""),
+                        lease_seconds=int(body.get("lease_seconds", 600)),
+                        notes=body.get("notes", ""),
+                        db_path=db_path,
+                    )
+                    if body.get("current_task_id"):
+                        append_task_event(
+                            body["current_task_id"],
+                            "agent_runtime_heartbeat",
+                            body.get("name") or body.get("agent_name", "web-ui"),
+                            {
+                                "agent_name": runtime.get("agent_name"),
+                                "principal_id": runtime.get("principal_id"),
+                                "status": runtime.get("status"),
+                                "current_task_id": runtime.get("current_task_id"),
+                                "lease_until": runtime.get("lease_until"),
+                            },
+                            db_path=db_path,
+                        )
                     self._send(
                         HTTPStatus.OK,
-                        heartbeat_agent_runtime(
-                            agent_name=body.get("name") or body.get("agent_name", ""),
-                            principal_id=body.get("principal_id", ""),
-                            workspace_id=workspace["workspace_id"],
-                            status=body.get("status", "active"),
-                            current_task_id=body.get("current_task_id", ""),
-                            lease_seconds=int(body.get("lease_seconds", 600)),
-                            notes=body.get("notes", ""),
-                            db_path=db_path,
-                        ),
+                        runtime,
                     )
                     return
                 if path == "/v1/orchestrator/run-once":
@@ -958,6 +993,202 @@ def _event_rows(events: list[dict]) -> str:
         """
         for event in events
     )
+
+
+def _terminal_task(task: dict) -> bool:
+    return task.get("status") in {"completed", "cancelled", "archived"}
+
+
+def _queue_task_rows(tasks: list[dict], empty: str, db_path: Path | str | None = None) -> str:
+    if not tasks:
+        return f'<tr><td colspan="6" class="muted">{_esc(empty)}</td></tr>'
+    rows = []
+    for task in tasks:
+        rows.append(
+            f"""
+            <tr>
+              <td><a href="/tasks/{_esc(task['task_id'])}">{_esc(task.get('title'))}</a><br>{_task_id_ref(task['task_id'])}</td>
+              <td>{_esc(task.get('status'))}</td>
+              <td>{_esc(task.get('priority'))} / {_esc(task.get('rank') or '-')}</td>
+              <td>{_esc(_short_datetime(task.get('due_at') or task.get('snooze_until') or ''))}</td>
+              <td>{_principal_ref(_lookup_principal(task.get('target_principal_id'), db_path), task.get('target_principal_id') or '')}</td>
+              <td>{_esc(task.get('agent_claim_owner') or '-')}</td>
+            </tr>
+            """
+        )
+    return "\n".join(rows)
+
+
+def _runtime_rows(runtimes: list[dict], db_path: Path | str | None = None) -> str:
+    if not runtimes:
+        return '<tr><td colspan="6" class="muted">등록된 runtime이 없습니다.</td></tr>'
+    rows = []
+    for runtime in runtimes:
+        live = _runtime_live(runtime)
+        task_id = runtime.get("current_task_id") or ""
+        rows.append(
+            f"""
+            <tr>
+              <td>{_principal_ref(_lookup_principal(runtime.get('principal_id'), db_path), runtime.get('principal_id') or '')}</td>
+              <td>{_esc(runtime.get('agent_name'))}</td>
+              <td><span class="pill {'ok' if live else 'warning'}">{_esc('live' if live else 'expired')}</span></td>
+              <td>{_esc(runtime.get('role'))}</td>
+              <td>{_task_id_ref(task_id)}</td>
+              <td class="mono">{_esc(_short_datetime(runtime.get('lease_until')))}</td>
+            </tr>
+            """
+        )
+    return "\n".join(rows)
+
+
+def _registry_rows(records: list[dict], kind: str, empty: str) -> str:
+    if not records:
+        return f'<tr><td colspan="5" class="muted">{_esc(empty)}</td></tr>'
+    rows = []
+    for record in records:
+        if kind == "workspaces":
+            ref = _workspace_ref(record, record.get("workspace_id", ""))
+            detail = record.get("canonical_path", "")
+            state = record.get("approval_status") or record.get("registration_status") or ""
+            owner = record.get("registered_by_principal_id", "")
+        elif kind == "principals":
+            ref = _principal_ref(record, record.get("principal_id", ""))
+            detail = record.get("contact_ref", "")
+            state = record.get("trust_level") or ""
+            owner = record.get("auth_method", "")
+        else:
+            ref = _harness_ref(record, record.get("harness_id", ""))
+            detail = f"agent={record.get('default_agent_principal_id', '')}"
+            state = "enabled" if record.get("enabled") else "disabled"
+            owner = record.get("policy_profile_id", "")
+        rows.append(
+            f"""
+            <tr>
+              <td>{ref}</td>
+              <td>{_esc(state)}</td>
+              <td class="path">{_esc(detail)}</td>
+              <td class="mono">{_esc(owner)}</td>
+              <td class="mono">{_esc(_short_datetime(record.get('updated_at') or record.get('created_at')))}</td>
+            </tr>
+            """
+        )
+    return "\n".join(rows)
+
+
+def render_control_plane(db_path: Path | str | None = None) -> str:
+    workspace = current_workspace(db_path=db_path)
+    tasks = list_tasks(db_path=db_path, limit=500)
+    principals = list_principals(db_path=db_path)
+    workspaces = list_workspaces(db_path=db_path)
+    harnesses = list_harness_profiles(db_path=db_path, workspace_id=workspace["workspace_id"])
+    runtimes = list_agent_runtimes(db_path=db_path, workspace_id=workspace["workspace_id"])
+    live_runtimes = [runtime for runtime in runtimes if _runtime_live(runtime)]
+    review_gates = [
+        task
+        for task in tasks
+        if task.get("task_kind") == "review_gate" and not _terminal_task(task)
+    ]
+    assigned_waiting = [
+        task
+        for task in tasks
+        if not _terminal_task(task)
+        and task.get("task_kind") != "review_gate"
+        and task.get("target_principal_id")
+        and not task.get("agent_claim_owner")
+    ]
+    claimed_or_running = [
+        task
+        for task in tasks
+        if not _terminal_task(task)
+        and (task.get("agent_claim_owner") or task.get("status") == "in_progress")
+    ]
+    approval_ready = [
+        task
+        for task in assigned_waiting
+        if task.get("approved_by_principal_id") and task.get("execution_mode") in {"agent_assisted", "agent_autonomous"}
+    ]
+    missing_harness_count = sum(1 for task in tasks if task.get("harness_id") and not _lookup_harness(task.get("harness_id"), db_path, workspace["workspace_id"]))
+    return f"""<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control - {_esc(APP_NAME)}</title>
+  <link rel="stylesheet" href="{_esc(_static_asset_url('app.css'))}">
+</head>
+<body>
+  <main class="shell">
+    <header class="doc-header">
+      <div>
+        <h1>Agentic Control</h1>
+        <p class="subtle">등록된 workspace, principal, harness, runtime, 승인 대기와 실행 대기 queue를 한 화면에서 확인합니다.</p>
+      </div>
+      <nav><a class="button" href="/">Tasks</a> <a class="button" href="/quick-add">Quick Add</a> <a class="button" href="/docs">API Docs</a></nav>
+    </header>
+    <section class="summary-grid">
+      <div class="metric"><dt>Workspace</dt><dd>{_esc(workspace.get('workspace_slug'))}</dd></div>
+      <div class="metric"><dt>Live runtimes</dt><dd>{len(live_runtimes)} / {len(runtimes)}</dd></div>
+      <div class="metric"><dt>Review gates</dt><dd>{len(review_gates)}</dd></div>
+      <div class="metric"><dt>Approval-ready</dt><dd>{len(approval_ready)}</dd></div>
+      <div class="metric"><dt>Claimed/running</dt><dd>{len(claimed_or_running)}</dd></div>
+      <div class="metric"><dt>Missing harness refs</dt><dd>{missing_harness_count}</dd></div>
+    </section>
+    <section class="control-grid">
+      <div class="panel">
+        <h2>Runtime 상태</h2>
+        <div class="doc-table-wrap"><table>
+          <thead><tr><th>Principal</th><th>Agent</th><th>Live</th><th>Role</th><th>Current task</th><th>Lease until</th></tr></thead>
+          <tbody>{_runtime_rows(runtimes, db_path)}</tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <h2>승인 대기 Review Gate</h2>
+        <div class="doc-table-wrap"><table>
+          <thead><tr><th>Task</th><th>Status</th><th>Priority</th><th>Due</th><th>Target</th><th>Claim</th></tr></thead>
+          <tbody>{_queue_task_rows(review_gates, '승인 대기 review gate가 없습니다.', db_path)}</tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <h2>배정/대기 Queue</h2>
+        <div class="doc-table-wrap"><table>
+          <thead><tr><th>Task</th><th>Status</th><th>Priority</th><th>Due</th><th>Target</th><th>Claim</th></tr></thead>
+          <tbody>{_queue_task_rows(assigned_waiting, 'target agent에 배정된 대기 작업이 없습니다.', db_path)}</tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <h2>Claim / 실행 중</h2>
+        <div class="doc-table-wrap"><table>
+          <thead><tr><th>Task</th><th>Status</th><th>Priority</th><th>Due</th><th>Target</th><th>Claim</th></tr></thead>
+          <tbody>{_queue_task_rows(claimed_or_running, 'claim 또는 실행 중인 작업이 없습니다.', db_path)}</tbody>
+        </table></div>
+      </div>
+    </section>
+    <section class="control-grid">
+      <div class="panel">
+        <h2>Workspaces</h2>
+        <div class="doc-table-wrap"><table>
+          <thead><tr><th>Workspace</th><th>Status</th><th>Path</th><th>Authority</th><th>Updated</th></tr></thead>
+          <tbody>{_registry_rows(workspaces, 'workspaces', '등록된 workspace가 없습니다.')}</tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <h2>Principals</h2>
+        <div class="doc-table-wrap"><table>
+          <thead><tr><th>Principal</th><th>Trust</th><th>Contact</th><th>Auth</th><th>Updated</th></tr></thead>
+          <tbody>{_registry_rows(principals, 'principals', '등록된 principal이 없습니다.')}</tbody>
+        </table></div>
+      </div>
+      <div class="panel full-span">
+        <h2>Harness Profiles</h2>
+        <div class="doc-table-wrap"><table>
+          <thead><tr><th>Harness</th><th>Status</th><th>Default agent</th><th>Policy</th><th>Updated</th></tr></thead>
+          <tbody>{_registry_rows(harnesses, 'harnesses', '현재 workspace에 등록된 harness가 없습니다.')}</tbody>
+        </table></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>"""
 
 
 def render_registry_record(kind: str, identifier: str, record: dict) -> str:
@@ -1687,6 +1918,7 @@ def build_openapi_spec() -> dict:
                         "capabilities": {"type": "array", "items": {"type": "string"}},
                         "default_harness_id": {"type": "string"},
                         "max_active_tasks": {"type": "integer", "default": 1},
+                        "current_task_id": {"type": "string"},
                         "lease_seconds": {"type": "integer", "default": 600},
                         "notes": {"type": "string"},
                     },
@@ -1941,7 +2173,7 @@ def render_index(tasks: list[dict]) -> str:
   <main class="shell">
   <header class="doc-header">
     <h1>{_esc(APP_NAME)}</h1>
-    <nav><a class="button primary" href="/quick-add">Quick Add</a> <a class="button" href="/docs">API Docs</a></nav>
+    <nav><a class="button" href="/control">Control</a> <a class="button primary" href="/quick-add">Quick Add</a> <a class="button" href="/docs">API Docs</a></nav>
   </header>
   <section class="summary-grid">
     <div class="metric"><dt>Tasks</dt><dd>{len(tasks)}</dd></div>
@@ -1969,7 +2201,7 @@ def render_quick_add(write_token: str = "") -> str:
 </head>
 <body>
   <main class="shell narrow">
-  <nav class="topbar"><a href="/">Back to tasks</a><span>Quick Add</span></nav>
+  <nav class="topbar"><a href="/">Back to tasks</a><span><a href="/control">Control</a> · Quick Add</span></nav>
   <header class="doc-header">
     <h1>Quick Add</h1>
     <p class="subtle">사람이 바로 등록하는 작업은 owner principal과 현재 workspace에 기본 바인딩된다.</p>
@@ -2041,7 +2273,7 @@ def render_task(task: dict, detail: dict, write_token: str = "") -> str:
         target_principal_id or claim_owner
     )
     claim_button = (
-        '<button class="primary" data-ui-action="claim">Agent Claim</button>'
+        '<button class="primary" data-ui-action="claim">작업 Claim</button>'
         if can_claim
         else ""
     )
@@ -2049,14 +2281,14 @@ def render_task(task: dict, detail: dict, write_token: str = "") -> str:
         '<button data-ui-action="release">진행 중지</button>' if task.get("status") == "in_progress" else ""
     )
     activate_button = (
-        '<button data-ui-action="activate-agent">Agent 활성화</button>'
+        '<button data-ui-action="activate-agent">Runtime 등록</button>'
         if detail.get("agent_activation_possible")
         else ""
     )
     heartbeat_button = (
-        '<button data-ui-action="heartbeat-agent">Agent Heartbeat</button>' if target_principal_id or runtime else ""
+        '<button data-ui-action="heartbeat-agent">Runtime Heartbeat</button>' if target_principal_id or runtime else ""
     )
-    runner_button = '<button class="primary" data-ui-action="runner-dry-run">Runner Dry-run</button>'
+    runner_button = '<button class="primary" data-ui-action="runner-dry-run">Dry-run 실행</button>'
     status_fields = [
         ("Status", task.get("status"), "mono"),
         ("Priority / Rank", f"{task.get('priority', '')} / {task.get('rank') or '-'}", "mono"),
@@ -2132,7 +2364,7 @@ def render_task(task: dict, detail: dict, write_token: str = "") -> str:
 <body>
   <main class="shell">
     <nav class="topbar">
-      <span><a href="/">Tasks</a> · <a href="/quick-add">Quick Add</a> · <a href="/docs">API Docs</a></span>
+      <span><a href="/">Tasks</a> · <a href="/control">Control</a> · <a href="/quick-add">Quick Add</a> · <a href="/docs">API Docs</a></span>
       <span>{_task_id_ref(task['task_id'])}</span>
     </nav>
     <section class="heading">
@@ -2157,7 +2389,7 @@ def render_task(task: dict, detail: dict, write_token: str = "") -> str:
       {runner_button}
       <button data-ui-action="request-review-gate">Review Gate</button>
       <button data-ui-action="delivery-dry-run">Delivery Dry-run</button>
-      <button data-ui-action="orchestrator-run">Orchestrator Run</button>
+      <button data-ui-action="orchestrator-run">Orchestrator 배정</button>
       <span id="result" class="result" aria-live="polite"></span>
     </section>
     <dl class="status-strip">

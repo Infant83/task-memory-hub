@@ -231,11 +231,14 @@ def list_task_events(
         ).fetchall()
     events = rows_to_dicts(rows)
     for event in events:
-        payload = event.pop("payload_json", "{}") or "{}"
-        try:
-            event["payload"] = json.loads(payload)
-        except json.JSONDecodeError:
-            event["payload"] = {"raw": payload}
+        if "payload_json" in event:
+            payload = event.pop("payload_json", "{}") or "{}"
+            try:
+                event["payload"] = json.loads(payload)
+            except json.JSONDecodeError:
+                event["payload"] = {"raw": payload}
+        else:
+            event.setdefault("payload", {})
     return events
 
 

@@ -16,6 +16,23 @@ This guide explains the stable meaning of the TMH Web UI screens. Exact layout, 
 
 Domain access for a local machine is intentionally left as a later TODO. The current Web UI remains a loopback-first local control plane.
 
+## Control Screen
+
+`/control`은 task 상세 화면보다 상위의 운영 대시보드다. 이 화면은 사람이 지금 TMH가 agentic workflow를 받을 준비가 되었는지 빠르게 확인하기 위한 화면이다.
+
+확인해야 하는 핵심 질문:
+
+- 등록된 workspace가 무엇이고 현재 hub가 어떤 workspace DB를 보고 있는가.
+- human, agent, service principal이 등록되어 있는가.
+- harness profile이 현재 workspace에서 해석 가능한가.
+- active runtime이 있고 lease가 살아 있는가.
+- 승인 대기 review gate가 있는가.
+- 승인되었지만 아직 claim되지 않은 agentic task가 있는가.
+- claim되었거나 실행 중인 task가 있는가.
+- harness reference가 task에는 있으나 registry에서 해석되지 않는 missing reference가 있는가.
+
+이 화면은 외부 Cline, Codex, Deepagents process를 직접 실행했다는 뜻을 주지 않는다. `live runtime`은 DB에 등록된 heartbeat/lease 상태이고, 실제 backend 실행은 runner 또는 MCP client가 별도로 수행해야 한다.
+
 ## Task List Screen
 
 The root screen is the fast scanning surface for the current hub task queue.
@@ -81,12 +98,12 @@ Common actions:
 | `중지요청` | Record a human stop request. Backend-specific stop semantics must be visible in events. |
 | `Snooze` | Defer the task until a later time. |
 | `Done` | Mark the task complete. |
-| `Agent Claim` | Assign/claim the task for a principal or runtime through the hub. |
-| `Agent 활성화` | Register or refresh an agent runtime record in the hub. This does not necessarily launch an external Cline, Codex, or Deepagents process. |
-| `Agent Heartbeat` | Refresh runtime liveness. |
-| `Runner Dry-run` | Run the policy-aware harness runner without side effects. |
+| `작업 Claim` | Assign/claim the task for a principal or runtime through the hub. |
+| `Runtime 등록` | Register or refresh an agent runtime record in the hub. This does not launch an external Cline, Codex, or Deepagents process. |
+| `Runtime Heartbeat` | Refresh runtime liveness and write a selected-task event when a current task is attached. |
+| `Dry-run 실행` | Run the policy-aware harness runner without side effects. |
 | `Review Gate` | Create or reuse a human review-gate child task. |
-| `Orchestrator Run` | Attempt one orchestrator pass that assigns eligible work to active capable agents. |
+| `Orchestrator 배정` | Attempt one orchestrator pass that assigns eligible work to active capable agents. |
 
 ### Status Strip
 

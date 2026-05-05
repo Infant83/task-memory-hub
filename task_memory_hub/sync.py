@@ -419,6 +419,143 @@ def _upsert_sync_link(
         return row_to_dict(row)
 
 
+def _mirror_workspace_harness_registry(local_path: Path, global_path: Path, workspace_id: str) -> dict[str, int]:
+    with transaction(local_path) as conn:
+        harness_rows = rows_to_dicts(
+            conn.execute("SELECT * FROM harness_profiles WHERE workspace_id = ?", (workspace_id,)).fetchall()
+        )
+        policy_ids = sorted({row.get("policy_profile_id", "") for row in harness_rows if row.get("policy_profile_id")})
+        network_ids = sorted({row.get("network_profile_id", "") for row in harness_rows if row.get("network_profile_id")})
+        policy_rows = (
+            rows_to_dicts(
+                conn.execute(
+                    f"SELECT * FROM policy_profiles WHERE policy_profile_id IN ({','.join('?' for _ in policy_ids)})",
+                    policy_ids,
+                ).fetchall()
+            )
+            if policy_ids
+            else []
+        )
+        network_rows = (
+            rows_to_dicts(
+                conn.execute(
+                    f"SELECT * FROM network_profiles WHERE network_profile_id IN ({','.join('?' for _ in network_ids)})",
+                    network_ids,
+                ).fetchall()
+            )
+            if network_ids
+            else []
+        )
+
+    with transaction(global_path) as conn:
+        for row in policy_rows:
+            conn.execute(
+                """
+                INSERT INTO policy_profiles(
+                    policy_profile_id, profile_name, classification, redaction_level,
+                    external_write_allowed, requires_approval_json, created_at, updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(policy_profile_id) DO UPDATE SET
+                    classification = excluded.classification,
+                    redaction_level = excluded.redaction_level,
+                    external_write_allowed = excluded.external_write_allowed,
+                    requires_approval_json = excluded.requires_approval_json,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    row["policy_profile_id"],
+                    row["profile_name"],
+                    row["classification"],
+                    row["redaction_level"],
+                    row["external_write_allowed"],
+                    row["requires_approval_json"],
+                    row["created_at"],
+                    row["updated_at"],
+                ),
+            )
+        for row in network_rows:
+            conn.execute(
+                """
+                INSERT INTO network_profiles(
+                    network_profile_id, workspace_id, profile_name, bind_scope, api_base_url,
+                    mcp_transport, mcp_command, auth_profile_ref, enabled, created_at, updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(network_profile_id) DO UPDATE SET
+                    bind_scope = excluded.bind_scope,
+                    api_base_url = excluded.api_base_url,
+                    mcp_transport = excluded.mcp_transport,
+                    mcp_command = excluded.mcp_command,
+                    auth_profile_ref = excluded.auth_profile_ref,
+                    enabled = excluded.enabled,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    row["network_profile_id"],
+                    row["workspace_id"],
+                    row["profile_name"],
+                    row["bind_scope"],
+                    row["api_base_url"],
+                    row["mcp_transport"],
+                    row["mcp_command"],
+                    row["auth_profile_ref"],
+                    row["enabled"],
+                    row["created_at"],
+                    row["updated_at"],
+                ),
+            )
+        for row in harness_rows:
+            conn.execute(
+                """
+                INSERT INTO harness_profiles(
+                    harness_id, workspace_id, profile_name, harness_type,
+                    default_agent_principal_id, policy_profile_id, network_profile_id,
+                    max_actions_per_hour, min_action_interval_seconds, max_open_actions,
+                    default_priority, default_push_profile, require_human_approval,
+                    enabled, created_at, updated_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(harness_id) DO UPDATE SET
+                    harness_type = excluded.harness_type,
+                    default_agent_principal_id = excluded.default_agent_principal_id,
+                    policy_profile_id = excluded.policy_profile_id,
+                    network_profile_id = excluded.network_profile_id,
+                    max_actions_per_hour = excluded.max_actions_per_hour,
+                    min_action_interval_seconds = excluded.min_action_interval_seconds,
+                    max_open_actions = excluded.max_open_actions,
+                    default_priority = excluded.default_priority,
+                    default_push_profile = excluded.default_push_profile,
+                    require_human_approval = excluded.require_human_approval,
+                    enabled = excluded.enabled,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    row["harness_id"],
+                    row["workspace_id"],
+                    row["profile_name"],
+                    row["harness_type"],
+                    row["default_agent_principal_id"],
+                    row["policy_profile_id"],
+                    row["network_profile_id"],
+                    row["max_actions_per_hour"],
+                    row["min_action_interval_seconds"],
+                    row["max_open_actions"],
+                    row["default_priority"],
+                    row["default_push_profile"],
+                    row["require_human_approval"],
+                    row["enabled"],
+                    row["created_at"],
+                    row["updated_at"],
+                ),
+            )
+    return {
+        "harness_profiles": len(harness_rows),
+        "policy_profiles": len(policy_rows),
+        "network_profiles": len(network_rows),
+    }
+
+
 def push_to_global(
     local_db_path: Path | str | None = None,
     global_db_path: Path | str | None = None,
@@ -472,6 +609,11 @@ def push_to_global(
         principal_type=registered_by_principal_type,
         display_name=registered_by_display_name,
         db_path=global_path,
+    )
+    mirrored_registry = _mirror_workspace_harness_registry(
+        local_path,
+        global_path,
+        local_workspace["workspace_id"],
     )
 
     tasks = _fetch_local_tasks(local_path, limit=limit, include_archived=include_archived)
@@ -545,6 +687,7 @@ def push_to_global(
         "global_workspace": global_workspace,
         "principal": local_principal,
         "global_principal": global_principal,
+        "mirrored_registry": mirrored_registry,
         "snapshot_profile": snapshot_profile,
         "count": len(pushed_items),
         "created": created,

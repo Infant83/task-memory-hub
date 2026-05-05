@@ -21,6 +21,7 @@ KOREAN_TITLES = {
     "docs/external-adapter-plan.md": "외부 연동 어댑터 계획",
     "docs/functionality-drift-audit.md": "기능 검증과 드리프트 감사",
     "docs/harness-runner-governance-development-spec.md": "하니스 러너 거버넌스 개발 명세",
+    "docs/newbie-hands-on-curriculum.md": "뉴비 Hands-on 튜토리얼 커리큘럼",
     "docs/postgres-slow-track.md": "PostgreSQL 전환 준비",
     "docs/public-progress.md": "공개 진행 요약",
     "docs/review-gate-flow.md": "Review Gate와 전달 드라이런",
@@ -38,6 +39,7 @@ KOREAN_SUMMARIES = {
     "task-memory-hub-설계명세.md": "Windows 로컬 우선 task/alarm/agent hub의 원래 설계 의도와 핵심 요구사항을 담고 있다.",
     "docs/external-adapter-plan.md": "OpenProject, Outlook 이메일, Teams, Webhook 연동을 어떤 순서와 안전장치로 붙일지 정리한다.",
     "docs/functionality-drift-audit.md": "현재 구현을 기능 스모크 결과와 원 설계 의도에 맞춰 비교하고, 유지/발전/되돌림 판단을 기록한다.",
+    "docs/newbie-hands-on-curriculum.md": "초보 사용자가 설치, 작업 등록, registry, control 화면, review gate, runner dry-run, global hub를 손으로 익히는 교육 흐름이다.",
 }
 
 LOCAL_ONLY_DOCS = {
